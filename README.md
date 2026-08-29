@@ -27,6 +27,12 @@ npm run db:generate -w @twm/server   # create a migration after editing the sche
 npm run db:seed -w @twm/server       # insert sample data
 ```
 
+## Auth
+
+Reads are public. Creating/updating/deleting data requires the admin password
+(`ADMIN_PASSWORD`, default `admin` in dev): `POST /api/login` with `{ "password": "..." }`
+returns a token to send as `Authorization: Bearer <token>`.
+
 ## Status
 
 Early scaffold. Being built in small increments.

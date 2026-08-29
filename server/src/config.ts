@@ -14,9 +14,16 @@ export const config = {
   host: process.env.HOST ?? "127.0.0.1",
   /** SQLite database file, relative to the server working directory. */
   dbFile: process.env.DB_FILE ?? "data.sqlite",
+  /** Password required to create/update/delete data. */
+  adminPassword: process.env.ADMIN_PASSWORD ?? "admin",
+  /** Secret used to sign admin session tokens. */
+  tokenSecret: process.env.TOKEN_SECRET ?? "dev-insecure-secret",
   /** Comma-separated list of allowed CORS origins; defaults to the Vite dev server. */
   corsOrigins: (process.env.CORS_ORIGINS ?? "http://localhost:5173")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),
 };
+
+export const usingDefaultSecrets =
+  process.env.ADMIN_PASSWORD === undefined || process.env.TOKEN_SECRET === undefined;
