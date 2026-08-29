@@ -1,4 +1,8 @@
-import type { CityWithParks, CountryWithChildren } from "@twm/shared";
+import type {
+  CityWithParks,
+  CountryWithChildren,
+  ThemeParkWithRides,
+} from "@twm/shared";
 
 export function findCity(
   countries: CountryWithChildren[],
@@ -7,6 +11,23 @@ export function findCity(
   for (const country of countries) {
     const city = country.cities.find((c) => c.id === cityId);
     if (city) return { country, city };
+  }
+  return null;
+}
+
+export function findPark(
+  countries: CountryWithChildren[],
+  parkId: number,
+): {
+  country: CountryWithChildren;
+  city: CityWithParks;
+  park: ThemeParkWithRides;
+} | null {
+  for (const country of countries) {
+    for (const city of country.cities) {
+      const park = city.themeParks.find((p) => p.id === parkId);
+      if (park) return { country, city, park };
+    }
   }
   return null;
 }

@@ -5,6 +5,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 
 import { CityMarkers } from "./CityMarkers";
 import { CountriesLayer } from "./CountriesLayer";
+import { ParkMarkers } from "./ParkMarkers";
 
 const WORLD_CENTER: [number, number] = [20, 0];
 
@@ -12,9 +13,15 @@ interface Props {
   countries: CountryWithChildren[];
   onSelectCountry: (country: CountryWithChildren) => void;
   onSelectCity: (cityId: number) => void;
+  onSelectPark: (parkId: number) => void;
 }
 
-export function MapView({ countries, onSelectCountry, onSelectCity }: Props) {
+export function MapView({
+  countries,
+  onSelectCountry,
+  onSelectCity,
+  onSelectPark,
+}: Props) {
   return (
     <MapContainer
       center={WORLD_CENTER}
@@ -29,6 +36,7 @@ export function MapView({ countries, onSelectCountry, onSelectCity }: Props) {
       />
       <CountriesLayer countries={countries} onSelectCountry={onSelectCountry} />
       <CityMarkers countries={countries} onSelectCity={onSelectCity} />
+      <ParkMarkers countries={countries} onSelectPark={onSelectPark} />
     </MapContainer>
   );
 }

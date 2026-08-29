@@ -4,12 +4,14 @@ import { MapView } from "./components/Map/MapView";
 import { CityPanel } from "./components/panels/CityPanel";
 import { CountryPanel } from "./components/panels/CountryPanel";
 import { DetailPanel } from "./components/panels/DetailPanel";
+import { ParkPanel } from "./components/panels/ParkPanel";
 import { useMapData } from "./hooks/useMapData";
-import { findCity } from "./lib/util";
+import { findCity, findPark } from "./lib/util";
 
 type Selection =
   | { kind: "country"; isoA3: string }
-  | { kind: "city"; id: number };
+  | { kind: "city"; id: number }
+  | { kind: "park"; id: number };
 
 export function App() {
   const { countries, error } = useMapData();
@@ -17,6 +19,7 @@ export function App() {
 
   const selectCountry = (isoA3: string) => setSelection({ kind: "country", isoA3 });
   const selectCity = (id: number) => setSelection({ kind: "city", id });
+  const selectPark = (id: number) => setSelection({ kind: "park", id });
   const close = () => setSelection(null);
 
   let panel: React.ReactNode = null;
@@ -33,6 +36,18 @@ export function App() {
           country={found.country}
           city={found.city}
           onSelectCountry={() => selectCountry(found.country.isoA3)}
+          onSelectPark={selectPark}
+        />
+      );
+    }
+  } else if (selection?.kind === "park") {
+    const found = findPark(countries, selection.id);
+    if (found) {
+      panel = (
+        <ParkPanel
+          city={found.city}
+          park={found.park}
+          onSelectCity={() => selectCity(found.city.id)}
         />
       );
     }
@@ -44,6 +59,7 @@ export function App() {
         countries={countries}
         onSelectCountry={(c) => selectCountry(c.isoA3)}
         onSelectCity={selectCity}
+        onSelectPark={selectPark}
       />
       <div
         style={{

@@ -6,9 +6,10 @@ interface Props {
   country: CountryWithChildren;
   city: CityWithParks;
   onSelectCountry: () => void;
+  onSelectPark: (parkId: number) => void;
 }
 
-export function CityPanel({ country, city, onSelectCountry }: Props) {
+export function CityPanel({ country, city, onSelectCountry, onSelectPark }: Props) {
   return (
     <div>
       <button type="button" className="row-button" onClick={onSelectCountry}>
@@ -38,10 +39,14 @@ export function CityPanel({ country, city, onSelectCountry }: Props) {
           const fav = park.rides.find((r) => r.isFavourite && r.type === "coaster");
           return (
             <li key={park.id}>
-              <div className="row-button">
+              <button
+                type="button"
+                className="row-button"
+                onClick={() => onSelectPark(park.id)}
+              >
                 <strong>{park.name}</strong>
                 {fav && <div className="fav">★ {fav.name}</div>}
-              </div>
+              </button>
             </li>
           );
         })}
