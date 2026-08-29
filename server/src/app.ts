@@ -12,7 +12,7 @@ import { statsRoutes } from "./routes/stats.js";
 import { themeParkRoutes } from "./routes/themeParks.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: true, trustProxy: true });
 
   assertConfig();
 
