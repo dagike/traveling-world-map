@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "npm install --include=dev",
-  "buildCommand": "npm run db:migrate -w @twm/server && npm run build -w @twm/client",
+  "installCommand": "npm ci --include=dev --workspaces --include-workspace-root",
+  "buildCommand": "node -e \"for (const p of ['leaflet','vite','react-dom','@vitejs/plugin-react','@twm/shared']) { try { require.resolve(p + '/package.json'); console.log('ok', p) } catch { console.log('MISSING', p) } }\" && npm run db:migrate -w @twm/server && npm run build -w @twm/client",
   "outputDirectory": "client/dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
