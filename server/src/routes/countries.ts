@@ -36,13 +36,17 @@ const properties = {
 
 export async function countryRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/countries", async () =>
-    db.select().from(countries).all().map(toCountry),
+    (await db.select().from(countries)).map(toCountry),
   );
 
   app.get("/api/countries/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.select().from(countries).where(eq(countries.id, id)).get();
+    const [row] = await db
+      .select()
+      .from(countries)
+      .where(eq(countries.id, id))
+      .limit(1);
     if (!row) return reply.code(404).send({ error: "country not found" });
     return toCountry(row);
   });
@@ -62,7 +66,7 @@ export async function countryRoutes(app: FastifyInstance): Promise<void> {
     async (req, reply) => {
       const body = req.body as CountryInput;
       try {
-        const row = db
+        const [row] = await db
           .insert(countries)
           .values({
             name: body.name,
@@ -71,9 +75,8 @@ export async function countryRoutes(app: FastifyInstance): Promise<void> {
             visitedYear: body.visitedYear ?? null,
             photos: body.photos ?? [],
           })
-          .returning()
-          .get();
-        return reply.code(201).send(toCountry(row));
+          .returning();
+        return reply.code(201).send(toCountry(row!));
       } catch (err) {
         if (isUniqueViolation(err)) {
           return reply.code(409).send({ error: "a country with that ISO code already exists" });
@@ -107,12 +110,11 @@ export async function countryRoutes(app: FastifyInstance): Promise<void> {
       }
 
       try {
-        const row = db
+        const [row] = await db
           .update(countries)
           .set(patch)
           .where(eq(countries.id, id))
-          .returning()
-          .get();
+          .returning();
         if (!row) return reply.code(404).send({ error: "country not found" });
         return toCountry(row);
       } catch (err) {
@@ -127,7 +129,10 @@ export async function countryRoutes(app: FastifyInstance): Promise<void> {
   app.delete("/api/countries/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.delete(countries).where(eq(countries.id, id)).returning().get();
+    const [row] = await db
+      .delete(countries)
+      .where(eq(countries.id, id))
+      .returning();
     if (!row) return reply.code(404).send({ error: "country not found" });
     return reply.code(204).send();
   });

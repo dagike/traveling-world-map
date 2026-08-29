@@ -42,15 +42,21 @@ export async function cityRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/countries/:countryId/cities", async (req, reply) => {
     const countryId = parseId((req.params as { countryId: string }).countryId);
     if (countryId === null) return reply.code(400).send({ error: "invalid id" });
-    const country = db.select().from(countries).where(eq(countries.id, countryId)).get();
+    const [country] = await db
+      .select()
+      .from(countries)
+      .where(eq(countries.id, countryId))
+      .limit(1);
     if (!country) return reply.code(404).send({ error: "country not found" });
-    return db.select().from(cities).where(eq(cities.countryId, countryId)).all().map(toCity);
+    return (
+      await db.select().from(cities).where(eq(cities.countryId, countryId))
+    ).map(toCity);
   });
 
   app.get("/api/cities/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.select().from(cities).where(eq(cities.id, id)).get();
+    const [row] = await db.select().from(cities).where(eq(cities.id, id)).limit(1);
     if (!row) return reply.code(404).send({ error: "city not found" });
     return toCity(row);
   });
@@ -70,11 +76,15 @@ export async function cityRoutes(app: FastifyInstance): Promise<void> {
     async (req, reply) => {
       const countryId = parseId((req.params as { countryId: string }).countryId);
       if (countryId === null) return reply.code(400).send({ error: "invalid id" });
-      const country = db.select().from(countries).where(eq(countries.id, countryId)).get();
+      const [country] = await db
+        .select()
+        .from(countries)
+        .where(eq(countries.id, countryId))
+        .limit(1);
       if (!country) return reply.code(404).send({ error: "country not found" });
 
       const body = req.body as CityInput;
-      const row = db
+      const [row] = await db
         .insert(cities)
         .values({
           countryId,
@@ -85,9 +95,8 @@ export async function cityRoutes(app: FastifyInstance): Promise<void> {
           visitedYear: body.visitedYear ?? null,
           photos: body.photos ?? [],
         })
-        .returning()
-        .get();
-      return reply.code(201).send(toCity(row));
+        .returning();
+      return reply.code(201).send(toCity(row!));
     },
   );
 
@@ -111,7 +120,11 @@ export async function cityRoutes(app: FastifyInstance): Promise<void> {
         return reply.code(400).send({ error: "no fields to update" });
       }
 
-      const row = db.update(cities).set(patch).where(eq(cities.id, id)).returning().get();
+      const [row] = await db
+        .update(cities)
+        .set(patch)
+        .where(eq(cities.id, id))
+        .returning();
       if (!row) return reply.code(404).send({ error: "city not found" });
       return toCity(row);
     },
@@ -120,7 +133,7 @@ export async function cityRoutes(app: FastifyInstance): Promise<void> {
   app.delete("/api/cities/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.delete(cities).where(eq(cities.id, id)).returning().get();
+    const [row] = await db.delete(cities).where(eq(cities.id, id)).returning();
     if (!row) return reply.code(404).send({ error: "city not found" });
     return reply.code(204).send();
   });

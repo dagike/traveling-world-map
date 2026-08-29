@@ -1,17 +1,23 @@
 import type { Photo, RideType } from "@twm/shared";
 import { relations, sql } from "drizzle-orm";
-import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  boolean,
+  doublePrecision,
+  integer,
+  jsonb,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 const photos = () =>
-  text("photos", { mode: "json" }).$type<Photo[]>().notNull().default(sql`'[]'`);
+  jsonb("photos").$type<Photo[]>().notNull().default(sql`'[]'::jsonb`);
 
-const createdAt = () =>
-  text("created_at")
-    .notNull()
-    .default(sql`(CURRENT_TIMESTAMP)`);
+const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
-export const countries = sqliteTable("countries", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const countries = pgTable("countries", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   /** ISO 3166-1 alpha-3; matches ISO_A3 in the world GeoJSON used for highlighting. */
   isoA3: text("iso_a3").notNull().unique(),
@@ -21,42 +27,42 @@ export const countries = sqliteTable("countries", {
   createdAt: createdAt(),
 });
 
-export const cities = sqliteTable("cities", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const cities = pgTable("cities", {
+  id: serial("id").primaryKey(),
   countryId: integer("country_id")
     .notNull()
     .references(() => countries.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  lat: real("lat").notNull(),
-  lng: real("lng").notNull(),
+  lat: doublePrecision("lat").notNull(),
+  lng: doublePrecision("lng").notNull(),
   notes: text("notes"),
   visitedYear: integer("visited_year"),
   photos: photos(),
   createdAt: createdAt(),
 });
 
-export const themeParks = sqliteTable("theme_parks", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const themeParks = pgTable("theme_parks", {
+  id: serial("id").primaryKey(),
   cityId: integer("city_id")
     .notNull()
     .references(() => cities.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  lat: real("lat").notNull(),
-  lng: real("lng").notNull(),
+  lat: doublePrecision("lat").notNull(),
+  lng: doublePrecision("lng").notNull(),
   info: text("info"),
   visitedYear: integer("visited_year"),
   photos: photos(),
   createdAt: createdAt(),
 });
 
-export const rides = sqliteTable("rides", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const rides = pgTable("rides", {
+  id: serial("id").primaryKey(),
   parkId: integer("park_id")
     .notNull()
     .references(() => themeParks.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   type: text("type").$type<RideType>().notNull(),
-  isFavourite: integer("is_favourite", { mode: "boolean" }).notNull().default(false),
+  isFavourite: boolean("is_favourite").notNull().default(false),
   notes: text("notes"),
   createdAt: createdAt(),
 });

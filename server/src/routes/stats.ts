@@ -7,14 +7,12 @@ import { cities, countries, rides, themeParks } from "../db/schema.js";
 
 export async function statsRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/stats", async (): Promise<Stats> => {
-    const [countryRow] = db.select({ n: count() }).from(countries).all();
-    const [cityRow] = db.select({ n: count() }).from(cities).all();
-    const [parkRow] = db.select({ n: count() }).from(themeParks).all();
-    const [coasterRow] = db
-      .select({ n: count() })
-      .from(rides)
-      .where(eq(rides.type, "coaster"))
-      .all();
+    const [[countryRow], [cityRow], [parkRow], [coasterRow]] = await Promise.all([
+      db.select({ n: count() }).from(countries),
+      db.select({ n: count() }).from(cities),
+      db.select({ n: count() }).from(themeParks),
+      db.select({ n: count() }).from(rides).where(eq(rides.type, "coaster")),
+    ]);
 
     return {
       countries: countryRow?.n ?? 0,

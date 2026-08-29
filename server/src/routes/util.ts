@@ -6,11 +6,12 @@ export function parseId(value: unknown): number | null {
 }
 
 export function isUniqueViolation(err: unknown): boolean {
+  // Postgres unique_violation
   return (
     typeof err === "object" &&
     err !== null &&
     "code" in err &&
-    (err as { code?: string }).code === "SQLITE_CONSTRAINT_UNIQUE"
+    (err as { code?: string }).code === "23505"
   );
 }
 

@@ -36,15 +36,19 @@ export async function rideRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/theme-parks/:parkId/rides", async (req, reply) => {
     const parkId = parseId((req.params as { parkId: string }).parkId);
     if (parkId === null) return reply.code(400).send({ error: "invalid id" });
-    const park = db.select().from(themeParks).where(eq(themeParks.id, parkId)).get();
+    const [park] = await db
+      .select()
+      .from(themeParks)
+      .where(eq(themeParks.id, parkId))
+      .limit(1);
     if (!park) return reply.code(404).send({ error: "theme park not found" });
-    return db.select().from(rides).where(eq(rides.parkId, parkId)).all().map(toRide);
+    return (await db.select().from(rides).where(eq(rides.parkId, parkId))).map(toRide);
   });
 
   app.get("/api/rides/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.select().from(rides).where(eq(rides.id, id)).get();
+    const [row] = await db.select().from(rides).where(eq(rides.id, id)).limit(1);
     if (!row) return reply.code(404).send({ error: "ride not found" });
     return toRide(row);
   });
@@ -64,11 +68,15 @@ export async function rideRoutes(app: FastifyInstance): Promise<void> {
     async (req, reply) => {
       const parkId = parseId((req.params as { parkId: string }).parkId);
       if (parkId === null) return reply.code(400).send({ error: "invalid id" });
-      const park = db.select().from(themeParks).where(eq(themeParks.id, parkId)).get();
+      const [park] = await db
+        .select()
+        .from(themeParks)
+        .where(eq(themeParks.id, parkId))
+        .limit(1);
       if (!park) return reply.code(404).send({ error: "theme park not found" });
 
       const body = req.body as RideInput;
-      const row = db
+      const [row] = await db
         .insert(rides)
         .values({
           parkId,
@@ -77,9 +85,8 @@ export async function rideRoutes(app: FastifyInstance): Promise<void> {
           isFavourite: body.isFavourite ?? false,
           notes: body.notes ?? null,
         })
-        .returning()
-        .get();
-      return reply.code(201).send(toRide(row));
+        .returning();
+      return reply.code(201).send(toRide(row!));
     },
   );
 
@@ -101,7 +108,11 @@ export async function rideRoutes(app: FastifyInstance): Promise<void> {
         return reply.code(400).send({ error: "no fields to update" });
       }
 
-      const row = db.update(rides).set(patch).where(eq(rides.id, id)).returning().get();
+      const [row] = await db
+        .update(rides)
+        .set(patch)
+        .where(eq(rides.id, id))
+        .returning();
       if (!row) return reply.code(404).send({ error: "ride not found" });
       return toRide(row);
     },
@@ -110,7 +121,7 @@ export async function rideRoutes(app: FastifyInstance): Promise<void> {
   app.delete("/api/rides/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.delete(rides).where(eq(rides.id, id)).returning().get();
+    const [row] = await db.delete(rides).where(eq(rides.id, id)).returning();
     if (!row) return reply.code(404).send({ error: "ride not found" });
     return reply.code(204).send();
   });

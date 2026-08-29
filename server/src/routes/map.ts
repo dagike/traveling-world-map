@@ -10,11 +10,16 @@ import { toThemePark } from "./themeParks.js";
 export async function mapRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/map", async () => {
     const rows = await db.query.countries.findMany({
+      orderBy: (c, { asc }) => asc(c.id),
       with: {
         cities: {
+          orderBy: (c, { asc }) => asc(c.id),
           with: {
             themeParks: {
-              with: { rides: true },
+              orderBy: (p, { asc }) => asc(p.id),
+              with: {
+                rides: { orderBy: (r, { asc }) => asc(r.id) },
+              },
             },
           },
         },

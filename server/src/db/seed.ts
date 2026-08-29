@@ -1,22 +1,19 @@
-import { runMigrations, db } from "./client.js";
+import { db } from "./client.js";
 import { cities, countries, rides, themeParks } from "./schema.js";
 
-runMigrations();
-
-const canada = db
+const [canada] = await db
   .insert(countries)
   .values({ name: "Canada", isoA3: "CAN", notes: "Home base.", visitedYear: 2026, photos: [] })
   .onConflictDoNothing({ target: countries.isoA3 })
-  .returning()
-  .get();
+  .returning();
 
-db.insert(countries)
+await db
+  .insert(countries)
   .values({ name: "United States of America", isoA3: "USA", visitedYear: 2025, photos: [] })
-  .onConflictDoNothing({ target: countries.isoA3 })
-  .run();
+  .onConflictDoNothing({ target: countries.isoA3 });
 
 if (canada) {
-  const toronto = db
+  const [toronto] = await db
     .insert(cities)
     .values({
       countryId: canada.id,
@@ -26,13 +23,12 @@ if (canada) {
       visitedYear: 2026,
       photos: [],
     })
-    .returning()
-    .get();
+    .returning();
 
-  const canadasWonderland = db
+  const [canadasWonderland] = await db
     .insert(themeParks)
     .values({
-      cityId: toronto.id,
+      cityId: toronto!.id,
       name: "Canada's Wonderland",
       lat: 43.8428,
       lng: -79.5394,
@@ -40,20 +36,22 @@ if (canada) {
       visitedYear: 2026,
       photos: [],
     })
-    .returning()
-    .get();
+    .returning();
 
-  db.insert(rides)
-    .values([
-      { parkId: canadasWonderland.id, name: "Leviathan", type: "coaster", isFavourite: true },
-      { parkId: canadasWonderland.id, name: "WindSeeker", type: "flat", isFavourite: true },
-    ])
-    .run();
+  await db.insert(rides).values([
+    { parkId: canadasWonderland!.id, name: "Leviathan", type: "coaster", isFavourite: true },
+    { parkId: canadasWonderland!.id, name: "WindSeeker", type: "flat", isFavourite: true },
+  ]);
 }
 
+const [c, ci, p, r] = await Promise.all([
+  db.select().from(countries),
+  db.select().from(cities),
+  db.select().from(themeParks),
+  db.select().from(rides),
+]);
 console.log(
-  `seeded; countries=${db.select().from(countries).all().length}` +
-    ` cities=${db.select().from(cities).all().length}` +
-    ` parks=${db.select().from(themeParks).all().length}` +
-    ` rides=${db.select().from(rides).all().length}`,
+  `seeded; countries=${c.length} cities=${ci.length} parks=${p.length} rides=${r.length}`,
 );
+
+process.exit(0);

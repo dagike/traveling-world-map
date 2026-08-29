@@ -9,11 +9,14 @@ function num(value: string | undefined, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+export const isProduction =
+  process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+
 export const config = {
   port: num(process.env.PORT, 4000),
   host: process.env.HOST ?? "127.0.0.1",
-  /** SQLite database file, relative to the server working directory. */
-  dbFile: process.env.DB_FILE ?? "data.sqlite",
+  /** Postgres connection string (Neon pooled endpoint in production). */
+  databaseUrl: process.env.DATABASE_URL ?? "",
   /** Password required to create/update/delete data. */
   adminPassword: process.env.ADMIN_PASSWORD ?? "admin",
   /** Secret used to sign admin session tokens. */

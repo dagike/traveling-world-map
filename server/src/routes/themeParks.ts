@@ -42,20 +42,21 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/cities/:cityId/theme-parks", async (req, reply) => {
     const cityId = parseId((req.params as { cityId: string }).cityId);
     if (cityId === null) return reply.code(400).send({ error: "invalid id" });
-    const city = db.select().from(cities).where(eq(cities.id, cityId)).get();
+    const [city] = await db.select().from(cities).where(eq(cities.id, cityId)).limit(1);
     if (!city) return reply.code(404).send({ error: "city not found" });
-    return db
-      .select()
-      .from(themeParks)
-      .where(eq(themeParks.cityId, cityId))
-      .all()
-      .map(toThemePark);
+    return (
+      await db.select().from(themeParks).where(eq(themeParks.cityId, cityId))
+    ).map(toThemePark);
   });
 
   app.get("/api/theme-parks/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.select().from(themeParks).where(eq(themeParks.id, id)).get();
+    const [row] = await db
+      .select()
+      .from(themeParks)
+      .where(eq(themeParks.id, id))
+      .limit(1);
     if (!row) return reply.code(404).send({ error: "theme park not found" });
     return toThemePark(row);
   });
@@ -75,11 +76,11 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
     async (req, reply) => {
       const cityId = parseId((req.params as { cityId: string }).cityId);
       if (cityId === null) return reply.code(400).send({ error: "invalid id" });
-      const city = db.select().from(cities).where(eq(cities.id, cityId)).get();
+      const [city] = await db.select().from(cities).where(eq(cities.id, cityId)).limit(1);
       if (!city) return reply.code(404).send({ error: "city not found" });
 
       const body = req.body as ThemeParkInput;
-      const row = db
+      const [row] = await db
         .insert(themeParks)
         .values({
           cityId,
@@ -90,9 +91,8 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
           visitedYear: body.visitedYear ?? null,
           photos: body.photos ?? [],
         })
-        .returning()
-        .get();
-      return reply.code(201).send(toThemePark(row));
+        .returning();
+      return reply.code(201).send(toThemePark(row!));
     },
   );
 
@@ -116,12 +116,11 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
         return reply.code(400).send({ error: "no fields to update" });
       }
 
-      const row = db
+      const [row] = await db
         .update(themeParks)
         .set(patch)
         .where(eq(themeParks.id, id))
-        .returning()
-        .get();
+        .returning();
       if (!row) return reply.code(404).send({ error: "theme park not found" });
       return toThemePark(row);
     },
@@ -130,7 +129,10 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
   app.delete("/api/theme-parks/:id", async (req, reply) => {
     const id = parseId((req.params as { id: string }).id);
     if (id === null) return reply.code(400).send({ error: "invalid id" });
-    const row = db.delete(themeParks).where(eq(themeParks.id, id)).returning().get();
+    const [row] = await db
+      .delete(themeParks)
+      .where(eq(themeParks.id, id))
+      .returning();
     if (!row) return reply.code(404).send({ error: "theme park not found" });
     return reply.code(204).send();
   });

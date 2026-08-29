@@ -3,7 +3,6 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import { adminGuard } from "./auth.js";
 import { config, usingDefaultSecrets } from "./config.js";
-import { runMigrations } from "./db/client.js";
 import { authRoutes } from "./routes/auth.js";
 import { cityRoutes } from "./routes/cities.js";
 import { countryRoutes } from "./routes/countries.js";
@@ -14,8 +13,6 @@ import { themeParkRoutes } from "./routes/themeParks.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: true });
-
-  runMigrations();
 
   if (usingDefaultSecrets) {
     app.log.warn(
