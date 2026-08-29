@@ -5,6 +5,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { config, isProduction } from "./config.js";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const PUBLIC_PATHS = new Set(["/api/login", "/api/health"]);
 const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const SCRYPT_KEYLEN = 64;
 
@@ -72,12 +73,17 @@ export function checkPassword(password: unknown): boolean {
 /** Blocks mutating `/api` requests unless a valid admin token is present. */
 export async function adminGuard(req: FastifyRequest, reply: FastifyReply): Promise<void> {
   if (SAFE_METHODS.has(req.method)) return;
-  if (!req.url.startsWith("/api/")) return;
-  if (req.url === "/api/login") return;
+
+  const path = (req.url ?? "").split("?")[0]!.replace(/\/+$/, "") || "/";
+  if (!path.includes("/api/")) return;
+  for (const publicPath of PUBLIC_PATHS) {
+    if (path.endsWith(publicPath)) return;
+  }
 
   const header = req.headers.authorization ?? "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : undefined;
   if (!verifyToken(token)) {
+    req.log.warn({ path, method: req.method }, "adminGuard blocked request");
     await reply.code(401).send({ error: "admin authentication required" });
   }
 }
