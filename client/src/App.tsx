@@ -4,6 +4,7 @@ import { AddCountryForm } from "./components/admin/AddCountryForm";
 import { AdminBar } from "./components/admin/AdminBar";
 import { LoginModal } from "./components/admin/LoginModal";
 import { MapView } from "./components/Map/MapView";
+import { StatsView } from "./components/StatsView";
 import { CityPanel } from "./components/panels/CityPanel";
 import { CountryPanel } from "./components/panels/CountryPanel";
 import { DetailPanel } from "./components/panels/DetailPanel";
@@ -24,6 +25,7 @@ export function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [addCountryOpen, setAddCountryOpen] = useState(false);
   const [pick, setPick] = useState<PickHandler | null>(null);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   const startPick: StartPick = (onPick) => setPick(() => onPick);
   const handlePick = (lat: number, lng: number) => {
@@ -137,6 +139,11 @@ export function App() {
         {error && (
           <span style={{ color: "crimson", fontWeight: 400 }}> — API error: {error}</span>
         )}
+        <div className="admin-bar">
+          <button type="button" onClick={() => setStatsOpen((v) => !v)}>
+            {statsOpen ? "hide stats" : "stats"}
+          </button>
+        </div>
         <AdminBar
           isAdmin={isAdmin}
           onLoginClick={() => setLoginOpen(true)}
@@ -144,6 +151,10 @@ export function App() {
           onAddCountry={() => setAddCountryOpen(true)}
         />
       </div>
+
+      {statsOpen && (
+        <StatsView countries={countries} onClose={() => setStatsOpen(false)} />
+      )}
 
       <DetailPanel open={panel !== null} onClose={close}>
         {panel}
