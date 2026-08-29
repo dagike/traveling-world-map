@@ -1,4 +1,15 @@
-import type { CountryWithChildren } from "@twm/shared";
+import type { CityWithParks, CountryWithChildren } from "@twm/shared";
+
+export function findCity(
+  countries: CountryWithChildren[],
+  cityId: number,
+): { country: CountryWithChildren; city: CityWithParks } | null {
+  for (const country of countries) {
+    const city = country.cities.find((c) => c.id === cityId);
+    if (city) return { country, city };
+  }
+  return null;
+}
 
 export function escapeHtml(value: string): string {
   return value.replace(

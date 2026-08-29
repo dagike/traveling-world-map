@@ -3,6 +3,7 @@ import "leaflet/dist/leaflet.css";
 import type { CountryWithChildren } from "@twm/shared";
 import { MapContainer, TileLayer } from "react-leaflet";
 
+import { CityMarkers } from "./CityMarkers";
 import { CountriesLayer } from "./CountriesLayer";
 
 const WORLD_CENTER: [number, number] = [20, 0];
@@ -10,9 +11,10 @@ const WORLD_CENTER: [number, number] = [20, 0];
 interface Props {
   countries: CountryWithChildren[];
   onSelectCountry: (country: CountryWithChildren) => void;
+  onSelectCity: (cityId: number) => void;
 }
 
-export function MapView({ countries, onSelectCountry }: Props) {
+export function MapView({ countries, onSelectCountry, onSelectCity }: Props) {
   return (
     <MapContainer
       center={WORLD_CENTER}
@@ -26,6 +28,7 @@ export function MapView({ countries, onSelectCountry }: Props) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <CountriesLayer countries={countries} onSelectCountry={onSelectCountry} />
+      <CityMarkers countries={countries} onSelectCity={onSelectCity} />
     </MapContainer>
   );
 }

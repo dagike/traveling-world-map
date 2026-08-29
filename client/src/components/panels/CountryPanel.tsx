@@ -4,9 +4,10 @@ import { PhotoStrip } from "../PhotoStrip";
 
 interface Props {
   country: CountryWithChildren;
+  onSelectCity: (cityId: number) => void;
 }
 
-export function CountryPanel({ country }: Props) {
+export function CountryPanel({ country, onSelectCity }: Props) {
   const parkCount = country.cities.reduce((n, c) => n + c.themeParks.length, 0);
 
   return (
@@ -32,14 +33,18 @@ export function CountryPanel({ country }: Props) {
       <ul className="plain">
         {country.cities.map((city) => (
           <li key={city.id}>
-            <div className="row-button">
+            <button
+              type="button"
+              className="row-button"
+              onClick={() => onSelectCity(city.id)}
+            >
               <strong>{city.name}</strong>
               {city.themeParks.length > 0 && (
                 <div className="muted">
                   {city.themeParks.map((p) => p.name).join(", ")}
                 </div>
               )}
-            </div>
+            </button>
           </li>
         ))}
       </ul>
