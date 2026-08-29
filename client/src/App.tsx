@@ -83,7 +83,9 @@ export function App() {
         <ParkPanel
           city={found.city}
           park={found.park}
+          isAdmin={isAdmin}
           onSelectCity={() => selectCity(found.city.id)}
+          onRideChanged={reload}
         />
       );
     }

@@ -2,6 +2,8 @@ import type {
   City,
   Country,
   CountryWithChildren,
+  Ride,
+  RideType,
   Stats,
   ThemePark,
 } from "@twm/shared";
@@ -77,6 +79,13 @@ export interface NewThemePark {
   visitedYear?: number;
 }
 
+export interface NewRide {
+  name: string;
+  type: RideType;
+  isFavourite?: boolean;
+  notes?: string;
+}
+
 export const api = {
   getMap: () => request<CountryWithChildren[]>("/map"),
   getStats: () => request<Stats>("/stats"),
@@ -91,6 +100,16 @@ export const api = {
     request<ThemePark>(`/cities/${cityId}/theme-parks`, {
       method: "POST",
       body: JSON.stringify(input),
+    }),
+  createRide: (parkId: number, input: NewRide) =>
+    request<Ride>(`/theme-parks/${parkId}/rides`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  updateRide: (rideId: number, patch: Partial<NewRide>) =>
+    request<Ride>(`/rides/${rideId}`, {
+      method: "PUT",
+      body: JSON.stringify(patch),
     }),
   login: async (password: string): Promise<void> => {
     const { token: newToken } = await request<{ token: string }>("/login", {

@@ -1,14 +1,17 @@
 import type { CityWithParks, ThemeParkWithRides } from "@twm/shared";
 
+import { AddRideForm } from "../admin/AddRideForm";
 import { PhotoStrip } from "../PhotoStrip";
 
 interface Props {
   city: CityWithParks;
   park: ThemeParkWithRides;
+  isAdmin: boolean;
   onSelectCity: () => void;
+  onRideChanged: () => void;
 }
 
-export function ParkPanel({ city, park, onSelectCity }: Props) {
+export function ParkPanel({ city, park, isAdmin, onSelectCity, onRideChanged }: Props) {
   const favCoaster = park.rides.find((r) => r.isFavourite && r.type === "coaster");
   const favFlat = park.rides.find((r) => r.isFavourite && r.type === "flat");
 
@@ -40,6 +43,7 @@ export function ParkPanel({ city, park, onSelectCity }: Props) {
       </p>
 
       <h3>All rides</h3>
+      {isAdmin && <AddRideForm park={park} onChanged={onRideChanged} />}
       {park.rides.length === 0 && <p className="muted">No rides added yet.</p>}
       <ul className="plain">
         {park.rides.map((ride) => (
