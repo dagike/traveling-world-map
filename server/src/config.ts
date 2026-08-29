@@ -12,6 +12,8 @@ function num(value: string | undefined, fallback: number): number {
 export const config = {
   port: num(process.env.PORT, 4000),
   host: process.env.HOST ?? "127.0.0.1",
+  /** SQLite database file, relative to the server working directory. */
+  dbFile: process.env.DB_FILE ?? "data.sqlite",
   /** Comma-separated list of allowed CORS origins; defaults to the Vite dev server. */
   corsOrigins: (process.env.CORS_ORIGINS ?? "http://localhost:5173")
     .split(",")

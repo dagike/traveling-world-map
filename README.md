@@ -20,6 +20,11 @@ This is an npm workspaces monorepo:
 ```bash
 npm install
 npm run typecheck
+
+# server (Fastify + SQLite); migrations run automatically on start
+npm run dev:server
+npm run db:generate -w @twm/server   # create a migration after editing the schema
+npm run db:seed -w @twm/server       # insert sample data
 ```
 
 ## Status
