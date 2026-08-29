@@ -1,6 +1,6 @@
 import type { CityWithParks, CountryWithChildren } from "@twm/shared";
 
-import type { StartPick } from "../../lib/util";
+import { plural, type StartPick } from "../../lib/util";
 import { AddParkForm } from "../admin/AddParkForm";
 import { CityAdmin } from "../admin/CityAdmin";
 import { PhotoStrip } from "../PhotoStrip";
@@ -37,7 +37,7 @@ export function CityPanel({
       <h2>{city.name}</h2>
       <div className="muted">
         {city.visitedYear ? `Visited ${city.visitedYear} · ` : ""}
-        {city.themeParks.length} theme parks
+        {plural(city.themeParks.length, "theme park")}
       </div>
 
       {isAdmin && (

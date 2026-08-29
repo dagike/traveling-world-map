@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import "./app.css";
 import { AddCountryForm } from "./components/admin/AddCountryForm";
 import { AdminBar } from "./components/admin/AdminBar";
 import { LoginModal } from "./components/admin/LoginModal";
@@ -19,7 +20,7 @@ type Selection =
   | { kind: "park"; id: number };
 
 export function App() {
-  const { countries, error, reload } = useMapData();
+  const { countries, error, loading, reload } = useMapData();
   const { isAdmin, login, logout } = useAuth();
   const [selection, setSelection] = useState<Selection | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -108,8 +109,10 @@ export function App() {
     }
   }
 
+  const isEmpty = !loading && !error && countries.length === 0;
+
   return (
-    <div style={{ position: "relative", height: "100%", width: "100%" }}>
+    <div className="app">
       <MapView
         countries={countries}
         onSelectCountry={(c) => selectCountry(c.isoA3)}
@@ -121,29 +124,14 @@ export function App() {
       {pick !== null && (
         <div className="pick-hint">click the map to set the location</div>
       )}
-      <div
-        style={{
-          position: "absolute",
-          top: 12,
-          left: 12,
-          zIndex: 1000,
-          padding: "6px 12px",
-          borderRadius: 8,
-          fontSize: "1rem",
-          fontWeight: 600,
-          background: "rgba(255, 255, 255, 0.9)",
-          color: "#111",
-        }}
-      >
-        traveling world map
-        {error && (
-          <span style={{ color: "crimson", fontWeight: 400 }}> — API error: {error}</span>
-        )}
-        <div className="admin-bar">
-          <button type="button" onClick={() => setStatsOpen((v) => !v)}>
-            {statsOpen ? "hide stats" : "stats"}
-          </button>
-        </div>
+
+      <div className="app-header">
+        <span className="app-header__title">traveling world map</span>
+        {loading && <span className="app-badge">loading…</span>}
+        {error && <span className="app-badge error">API error: {error}</span>}
+        <button type="button" onClick={() => setStatsOpen((v) => !v)}>
+          {statsOpen ? "hide stats" : "stats"}
+        </button>
         <AdminBar
           isAdmin={isAdmin}
           onLoginClick={() => setLoginOpen(true)}
@@ -151,6 +139,14 @@ export function App() {
           onAddCountry={() => setAddCountryOpen(true)}
         />
       </div>
+
+      {isEmpty && (
+        <div className="app-empty">
+          {isAdmin
+            ? "No countries yet — use “+ country” to add your first one."
+            : "No countries visited yet."}
+        </div>
+      )}
 
       {statsOpen && (
         <StatsView countries={countries} onClose={() => setStatsOpen(false)} />

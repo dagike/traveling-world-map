@@ -1,0 +1,75 @@
+.app {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.app-header {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(100vw - 24px);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  color: #0f172a;
+}
+
+.app-header__title {
+  font-weight: 700;
+}
+
+.app-header .admin-bar {
+  margin-top: 0;
+}
+
+.app-header > button {
+  font: inherit;
+  font-size: 0.8rem;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.app-header > button:hover {
+  border-color: #e8590c;
+}
+
+.app-badge {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.app-badge.error {
+  color: crimson;
+}
+
+.app-empty {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  color: #475569;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 520px) {
+  .app-header {
+    font-size: 0.9rem;
+  }
+}

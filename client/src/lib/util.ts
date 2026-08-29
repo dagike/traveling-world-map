@@ -35,6 +35,10 @@ export function findPark(
 export type PickHandler = (lat: number, lng: number) => void;
 export type StartPick = (onPick: PickHandler) => void;
 
+export function plural(n: number, word: string, pluralForm?: string): string {
+  return `${n} ${n === 1 ? word : (pluralForm ?? `${word}s`)}`;
+}
+
 export function escapeHtml(value: string): string {
   return value.replace(
     /[&<>"']/g,

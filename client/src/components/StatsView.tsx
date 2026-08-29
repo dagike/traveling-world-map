@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { CountryWithChildren, Stats } from "@twm/shared";
 
 import { api, ApiError } from "../api";
+import { plural } from "../lib/util";
 import "./panels/panel.css";
 
 interface Props {
@@ -80,8 +81,11 @@ export function StatsView({ countries, onClose }: Props) {
               {c.name}
               <span className="muted">
                 {" "}
-                — {c.cities.length} cities,{" "}
-                {c.cities.reduce((n, city) => n + city.themeParks.length, 0)} parks
+                — {plural(c.cities.length, "city", "cities")},{" "}
+                {plural(
+                  c.cities.reduce((n, city) => n + city.themeParks.length, 0),
+                  "park",
+                )}
               </span>
             </li>
           ))}
