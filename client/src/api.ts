@@ -106,11 +106,42 @@ export const api = {
       method: "POST",
       body: JSON.stringify(input),
     }),
+  updateCountry: (
+    id: number,
+    patch: { name?: string; visitedYear?: number | null; notes?: string | null },
+  ) => request<Country>(`/countries/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
+  updateCity: (
+    id: number,
+    patch: {
+      name?: string;
+      lat?: number;
+      lng?: number;
+      visitedYear?: number | null;
+      notes?: string | null;
+    },
+  ) => request<City>(`/cities/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
+  updateThemePark: (
+    id: number,
+    patch: {
+      name?: string;
+      lat?: number;
+      lng?: number;
+      info?: string | null;
+      visitedYear?: number | null;
+    },
+  ) =>
+    request<ThemePark>(`/theme-parks/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
   updateRide: (rideId: number, patch: Partial<NewRide>) =>
     request<Ride>(`/rides/${rideId}`, {
       method: "PUT",
       body: JSON.stringify(patch),
     }),
+  deleteCountry: (id: number) =>
+    request<void>(`/countries/${id}`, { method: "DELETE" }),
+  deleteCity: (id: number) => request<void>(`/cities/${id}`, { method: "DELETE" }),
+  deleteThemePark: (id: number) =>
+    request<void>(`/theme-parks/${id}`, { method: "DELETE" }),
+  deleteRide: (id: number) => request<void>(`/rides/${id}`, { method: "DELETE" }),
   login: async (password: string): Promise<void> => {
     const { token: newToken } = await request<{ token: string }>("/login", {
       method: "POST",

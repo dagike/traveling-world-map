@@ -2,6 +2,7 @@ import type { CityWithParks, CountryWithChildren } from "@twm/shared";
 
 import type { StartPick } from "../../lib/util";
 import { AddParkForm } from "../admin/AddParkForm";
+import { CityAdmin } from "../admin/CityAdmin";
 import { PhotoStrip } from "../PhotoStrip";
 
 interface Props {
@@ -12,6 +13,8 @@ interface Props {
   onSelectPark: (parkId: number) => void;
   onStartPick: StartPick;
   onParkCreated: (parkId: number) => void;
+  onChanged: () => void;
+  onDeleted: () => void;
 }
 
 export function CityPanel({
@@ -22,6 +25,8 @@ export function CityPanel({
   onSelectPark,
   onStartPick,
   onParkCreated,
+  onChanged,
+  onDeleted,
 }: Props) {
   return (
     <div>
@@ -34,6 +39,15 @@ export function CityPanel({
         {city.visitedYear ? `Visited ${city.visitedYear} · ` : ""}
         {city.themeParks.length} theme parks
       </div>
+
+      {isAdmin && (
+        <CityAdmin
+          city={city}
+          onStartPick={onStartPick}
+          onChanged={onChanged}
+          onDeleted={onDeleted}
+        />
+      )}
 
       <h3>Photos</h3>
       <PhotoStrip photos={city.photos} />

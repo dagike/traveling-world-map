@@ -1,6 +1,9 @@
 import type { CityWithParks, ThemeParkWithRides } from "@twm/shared";
 
+import type { StartPick } from "../../lib/util";
 import { AddRideForm } from "../admin/AddRideForm";
+import { ParkAdmin } from "../admin/ParkAdmin";
+import { RideRow } from "../admin/RideRow";
 import { PhotoStrip } from "../PhotoStrip";
 
 interface Props {
@@ -8,10 +11,20 @@ interface Props {
   park: ThemeParkWithRides;
   isAdmin: boolean;
   onSelectCity: () => void;
-  onRideChanged: () => void;
+  onStartPick: StartPick;
+  onChanged: () => void;
+  onDeleted: () => void;
 }
 
-export function ParkPanel({ city, park, isAdmin, onSelectCity, onRideChanged }: Props) {
+export function ParkPanel({
+  city,
+  park,
+  isAdmin,
+  onSelectCity,
+  onStartPick,
+  onChanged,
+  onDeleted,
+}: Props) {
   const favCoaster = park.rides.find((r) => r.isFavourite && r.type === "coaster");
   const favFlat = park.rides.find((r) => r.isFavourite && r.type === "flat");
 
@@ -23,6 +36,15 @@ export function ParkPanel({ city, park, isAdmin, onSelectCity, onRideChanged }: 
 
       <h2>{park.name}</h2>
       {park.visitedYear && <div className="muted">Visited {park.visitedYear}</div>}
+
+      {isAdmin && (
+        <ParkAdmin
+          park={park}
+          onStartPick={onStartPick}
+          onChanged={onChanged}
+          onDeleted={onDeleted}
+        />
+      )}
 
       <h3>Photos</h3>
       <PhotoStrip photos={park.photos} />
@@ -43,18 +65,17 @@ export function ParkPanel({ city, park, isAdmin, onSelectCity, onRideChanged }: 
       </p>
 
       <h3>All rides</h3>
-      {isAdmin && <AddRideForm park={park} onChanged={onRideChanged} />}
+      {isAdmin && <AddRideForm park={park} onChanged={onChanged} />}
       {park.rides.length === 0 && <p className="muted">No rides added yet.</p>}
       <ul className="plain">
         {park.rides.map((ride) => (
-          <li key={ride.id} className="row-button">
-            <strong>{ride.name}</strong>
-            <div className="muted">
-              {ride.type}
-              {ride.isFavourite ? " · ★ favourite" : ""}
-            </div>
-            {ride.notes && <div className="muted">{ride.notes}</div>}
-          </li>
+          <RideRow
+            key={ride.id}
+            ride={ride}
+            park={park}
+            isAdmin={isAdmin}
+            onChanged={onChanged}
+          />
         ))}
       </ul>
     </div>

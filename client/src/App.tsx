@@ -55,6 +55,11 @@ export function App() {
             reload();
             selectCity(id);
           }}
+          onChanged={reload}
+          onDeleted={() => {
+            setSelection(null);
+            reload();
+          }}
         />
       );
     }
@@ -73,6 +78,11 @@ export function App() {
             reload();
             selectPark(id);
           }}
+          onChanged={reload}
+          onDeleted={() => {
+            selectCountry(found.country.isoA3);
+            reload();
+          }}
         />
       );
     }
@@ -85,7 +95,12 @@ export function App() {
           park={found.park}
           isAdmin={isAdmin}
           onSelectCity={() => selectCity(found.city.id)}
-          onRideChanged={reload}
+          onStartPick={startPick}
+          onChanged={reload}
+          onDeleted={() => {
+            selectCity(found.city.id);
+            reload();
+          }}
         />
       );
     }
