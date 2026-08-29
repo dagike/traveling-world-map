@@ -1,35 +1,26 @@
-import { useEffect, useState } from "react";
-
-import type { Stats } from "@twm/shared";
-
-import { api, ApiError } from "./api";
+import { MapView } from "./components/Map/MapView";
 
 export function App() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    api
-      .getStats()
-      .then(setStats)
-      .catch((err: unknown) => {
-        setError(err instanceof ApiError ? err.message : "failed to reach the API");
-      });
-  }, []);
-
   return (
-    <main style={{ padding: "2rem", maxWidth: 640 }}>
-      <h1>traveling world map</h1>
-      <p>Client scaffold. The interactive map is built in the next steps.</p>
-      {error && <p style={{ color: "crimson" }}>API error: {error}</p>}
-      {stats && (
-        <ul>
-          <li>{stats.countries} countries</li>
-          <li>{stats.cities} cities</li>
-          <li>{stats.themeParks} theme parks</li>
-          <li>{stats.coasters} coasters</li>
-        </ul>
-      )}
-    </main>
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
+      <MapView />
+      <h1
+        style={{
+          position: "absolute",
+          top: 12,
+          left: 12,
+          zIndex: 1000,
+          margin: 0,
+          padding: "6px 12px",
+          borderRadius: 8,
+          fontSize: "1rem",
+          background: "rgba(255, 255, 255, 0.9)",
+          color: "#111",
+          pointerEvents: "none",
+        }}
+      >
+        traveling world map
+      </h1>
+    </div>
   );
 }
