@@ -1,4 +1,4 @@
-import type { CountryWithChildren, Stats } from "@twm/shared";
+import type { Country, CountryWithChildren, Stats } from "@twm/shared";
 
 const BASE = "/api";
 const TOKEN_KEY = "twm.adminToken";
@@ -50,9 +50,17 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return data as T;
 }
 
+export interface NewCountry {
+  name: string;
+  isoA3: string;
+  visitedYear?: number;
+}
+
 export const api = {
   getMap: () => request<CountryWithChildren[]>("/map"),
   getStats: () => request<Stats>("/stats"),
+  createCountry: (input: NewCountry) =>
+    request<Country>("/countries", { method: "POST", body: JSON.stringify(input) }),
   login: async (password: string): Promise<void> => {
     const { token: newToken } = await request<{ token: string }>("/login", {
       method: "POST",

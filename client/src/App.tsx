@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+import { AddCountryForm } from "./components/admin/AddCountryForm";
 import { AdminBar } from "./components/admin/AdminBar";
 import { LoginModal } from "./components/admin/LoginModal";
 import { MapView } from "./components/Map/MapView";
@@ -17,10 +18,16 @@ type Selection =
   | { kind: "park"; id: number };
 
 export function App() {
-  const { countries, error } = useMapData();
+  const { countries, error, reload } = useMapData();
   const { isAdmin, login, logout } = useAuth();
   const [selection, setSelection] = useState<Selection | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [addCountryOpen, setAddCountryOpen] = useState(false);
+
+  const visitedCodes = useMemo(
+    () => new Set(countries.map((c) => c.isoA3)),
+    [countries],
+  );
 
   const selectCountry = (isoA3: string) => setSelection({ kind: "country", isoA3 });
   const selectCity = (id: number) => setSelection({ kind: "city", id });
@@ -88,6 +95,7 @@ export function App() {
           isAdmin={isAdmin}
           onLoginClick={() => setLoginOpen(true)}
           onLogout={logout}
+          onAddCountry={() => setAddCountryOpen(true)}
         />
       </div>
 
@@ -97,6 +105,17 @@ export function App() {
 
       {loginOpen && (
         <LoginModal onClose={() => setLoginOpen(false)} onSubmit={login} />
+      )}
+
+      {addCountryOpen && (
+        <AddCountryForm
+          visitedCodes={visitedCodes}
+          onClose={() => setAddCountryOpen(false)}
+          onCreated={(isoA3) => {
+            reload();
+            selectCountry(isoA3);
+          }}
+        />
       )}
     </div>
   );
