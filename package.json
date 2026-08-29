@@ -4,9 +4,11 @@
   "private": true,
   "description": "Interactive world map of the countries, cities and theme parks I've visited",
   "workspaces": [
-    "shared"
+    "shared",
+    "server"
   ],
   "scripts": {
+    "dev:server": "npm run dev -w @twm/server",
     "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }
