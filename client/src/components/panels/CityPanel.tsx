@@ -1,15 +1,28 @@
 import type { CityWithParks, CountryWithChildren } from "@twm/shared";
 
+import type { StartPick } from "../../lib/util";
+import { AddParkForm } from "../admin/AddParkForm";
 import { PhotoStrip } from "../PhotoStrip";
 
 interface Props {
   country: CountryWithChildren;
   city: CityWithParks;
+  isAdmin: boolean;
   onSelectCountry: () => void;
   onSelectPark: (parkId: number) => void;
+  onStartPick: StartPick;
+  onParkCreated: (parkId: number) => void;
 }
 
-export function CityPanel({ country, city, onSelectCountry, onSelectPark }: Props) {
+export function CityPanel({
+  country,
+  city,
+  isAdmin,
+  onSelectCountry,
+  onSelectPark,
+  onStartPick,
+  onParkCreated,
+}: Props) {
   return (
     <div>
       <button type="button" className="row-button" onClick={onSelectCountry}>
@@ -33,6 +46,13 @@ export function CityPanel({ country, city, onSelectCountry, onSelectPark }: Prop
       )}
 
       <h3>Theme parks</h3>
+      {isAdmin && (
+        <AddParkForm
+          cityId={city.id}
+          onStartPick={onStartPick}
+          onCreated={onParkCreated}
+        />
+      )}
       {city.themeParks.length === 0 && <p className="muted">No theme parks added yet.</p>}
       <ul className="plain">
         {city.themeParks.map((park) => {

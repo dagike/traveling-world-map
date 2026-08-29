@@ -65,8 +65,14 @@ export function App() {
         <CityPanel
           country={found.country}
           city={found.city}
+          isAdmin={isAdmin}
           onSelectCountry={() => selectCountry(found.country.isoA3)}
           onSelectPark={selectPark}
+          onStartPick={startPick}
+          onParkCreated={(id) => {
+            reload();
+            selectPark(id);
+          }}
         />
       );
     }

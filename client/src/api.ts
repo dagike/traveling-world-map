@@ -1,4 +1,10 @@
-import type { City, Country, CountryWithChildren, Stats } from "@twm/shared";
+import type {
+  City,
+  Country,
+  CountryWithChildren,
+  Stats,
+  ThemePark,
+} from "@twm/shared";
 
 const BASE = "/api";
 const TOKEN_KEY = "twm.adminToken";
@@ -63,6 +69,14 @@ export interface NewCity {
   visitedYear?: number;
 }
 
+export interface NewThemePark {
+  name: string;
+  lat: number;
+  lng: number;
+  info?: string;
+  visitedYear?: number;
+}
+
 export const api = {
   getMap: () => request<CountryWithChildren[]>("/map"),
   getStats: () => request<Stats>("/stats"),
@@ -70,6 +84,11 @@ export const api = {
     request<Country>("/countries", { method: "POST", body: JSON.stringify(input) }),
   createCity: (countryId: number, input: NewCity) =>
     request<City>(`/countries/${countryId}/cities`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  createThemePark: (cityId: number, input: NewThemePark) =>
+    request<ThemePark>(`/cities/${cityId}/theme-parks`, {
       method: "POST",
       body: JSON.stringify(input),
     }),
