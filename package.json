@@ -1,0 +1,12 @@
+{
+  "name": "traveling-world-map",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Interactive world map of the countries, cities and theme parks I've visited",
+  "workspaces": [
+    "shared"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
