@@ -12,15 +12,19 @@ function num(value: string | undefined, fallback: number): number {
 export const isProduction =
   process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
 
+const DEV_TOKEN_SECRET = "dev-insecure-secret";
+
 export const config = {
   port: num(process.env.PORT, 4000),
   host: process.env.HOST ?? "127.0.0.1",
   /** Postgres connection string (Neon pooled endpoint in production). */
   databaseUrl: process.env.DATABASE_URL ?? "",
-  /** Password required to create/update/delete data. */
-  adminPassword: process.env.ADMIN_PASSWORD ?? "admin",
+  /** scrypt hash (`salt:hash`) of the admin password; the production credential. */
+  adminPasswordHash: process.env.ADMIN_PASSWORD_HASH ?? "",
+  /** Plaintext admin password — dev convenience only, ignored in production. */
+  devAdminPassword: process.env.ADMIN_PASSWORD ?? (isProduction ? "" : "admin"),
   /** Secret used to sign admin session tokens. */
-  tokenSecret: process.env.TOKEN_SECRET ?? "dev-insecure-secret",
+  tokenSecret: process.env.TOKEN_SECRET ?? DEV_TOKEN_SECRET,
   /** Comma-separated list of allowed CORS origins; defaults to the Vite dev server. */
   corsOrigins: (process.env.CORS_ORIGINS ?? "http://localhost:5173")
     .split(",")
@@ -28,5 +32,22 @@ export const config = {
     .filter(Boolean),
 };
 
-export const usingDefaultSecrets =
-  process.env.ADMIN_PASSWORD === undefined || process.env.TOKEN_SECRET === undefined;
+/**
+ * In production every secret must be set explicitly. Throws with a clear message
+ * so a misconfigured deploy fails fast instead of running wide open.
+ */
+export function assertConfig(): void {
+  if (!config.databaseUrl) {
+    throw new Error("DATABASE_URL is not set");
+  }
+  if (!isProduction) return;
+
+  const missing: string[] = [];
+  if (!process.env.TOKEN_SECRET || config.tokenSecret === DEV_TOKEN_SECRET) {
+    missing.push("TOKEN_SECRET");
+  }
+  if (!config.adminPasswordHash) missing.push("ADMIN_PASSWORD_HASH");
+  if (missing.length > 0) {
+    throw new Error(`missing required production env vars: ${missing.join(", ")}`);
+  }
+}

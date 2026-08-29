@@ -2,7 +2,7 @@ import cors from "@fastify/cors";
 import Fastify, { type FastifyInstance } from "fastify";
 
 import { adminGuard } from "./auth.js";
-import { config, usingDefaultSecrets } from "./config.js";
+import { assertConfig, config, isProduction } from "./config.js";
 import { authRoutes } from "./routes/auth.js";
 import { cityRoutes } from "./routes/cities.js";
 import { countryRoutes } from "./routes/countries.js";
@@ -14,9 +14,11 @@ import { themeParkRoutes } from "./routes/themeParks.js";
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: true });
 
-  if (usingDefaultSecrets) {
+  assertConfig();
+
+  if (!isProduction && !config.adminPasswordHash) {
     app.log.warn(
-      "ADMIN_PASSWORD / TOKEN_SECRET not set; using insecure defaults (dev only)",
+      "ADMIN_PASSWORD_HASH not set; falling back to plaintext ADMIN_PASSWORD (dev only)",
     );
   }
 

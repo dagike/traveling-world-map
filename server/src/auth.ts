@@ -1,10 +1,12 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { config } from "./config.js";
+import { config, isProduction } from "./config.js";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const SCRYPT_KEYLEN = 64;
 
 function sign(data: string): string {
   return createHmac("sha256", config.tokenSecret).update(data).digest("base64url");
@@ -16,23 +18,55 @@ function safeEqual(a: string, b: string): boolean {
   return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
 }
 
-/** Returns a signed token proving admin access. */
+/** Produces a `salt:hash` string for storing in ADMIN_PASSWORD_HASH. */
+export function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, SCRYPT_KEYLEN).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function verifyScryptHash(password: string, stored: string): boolean {
+  const [salt, hash] = stored.split(":");
+  if (!salt || !hash) return false;
+  const expected = Buffer.from(hash, "hex");
+  const actual = scryptSync(password, salt, expected.length);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+interface TokenPayload {
+  role: "admin";
+  exp: number;
+}
+
+/** Returns a signed token proving admin access, valid for TOKEN_TTL_MS. */
 export function createToken(): string {
-  const payload = Buffer.from(JSON.stringify({ role: "admin", iat: Date.now() })).toString(
-    "base64url",
-  );
-  return `${payload}.${sign(payload)}`;
+  const payload: TokenPayload = { role: "admin", exp: Date.now() + TOKEN_TTL_MS };
+  const encoded = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  return `${encoded}.${sign(encoded)}`;
 }
 
 export function verifyToken(token: string | undefined): boolean {
   if (!token) return false;
-  const [payload, signature] = token.split(".");
-  if (!payload || !signature) return false;
-  return safeEqual(signature, sign(payload));
+  const [encoded, signature] = token.split(".");
+  if (!encoded || !signature) return false;
+  if (!safeEqual(signature, sign(encoded))) return false;
+  try {
+    const payload = JSON.parse(Buffer.from(encoded, "base64url").toString()) as TokenPayload;
+    return payload.role === "admin" && typeof payload.exp === "number" && payload.exp > Date.now();
+  } catch {
+    return false;
+  }
 }
 
 export function checkPassword(password: unknown): boolean {
-  return typeof password === "string" && safeEqual(password, config.adminPassword);
+  if (typeof password !== "string" || password.length === 0) return false;
+  if (config.adminPasswordHash) {
+    return verifyScryptHash(password, config.adminPasswordHash);
+  }
+  if (!isProduction && config.devAdminPassword) {
+    return safeEqual(password, config.devAdminPassword);
+  }
+  return false;
 }
 
 /** Blocks mutating `/api` requests unless a valid admin token is present. */
