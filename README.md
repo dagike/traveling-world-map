@@ -29,6 +29,12 @@ npm run db:generate -w @twm/server   # create a migration after editing the sche
 npm run db:seed -w @twm/server       # insert sample data
 ```
 
+## Map data
+
+`client/public/countries.geo.json` is a trimmed Natural Earth 1:110m admin-0 dataset
+(properties reduced to `name` + `code`, coordinates rounded). `code` is the Natural Earth
+`ADM0_A3` value; a country row's `isoA3` must match it for the country to highlight.
+
 ## Auth
 
 Reads are public. Creating/updating/deleting data requires the admin password
