@@ -5,6 +5,7 @@ import { config } from "./config.js";
 import { runMigrations } from "./db/client.js";
 import { cityRoutes } from "./routes/cities.js";
 import { countryRoutes } from "./routes/countries.js";
+import { rideRoutes } from "./routes/rides.js";
 import { themeParkRoutes } from "./routes/themeParks.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -18,6 +19,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(countryRoutes);
   await app.register(cityRoutes);
   await app.register(themeParkRoutes);
+  await app.register(rideRoutes);
 
   return app;
 }
