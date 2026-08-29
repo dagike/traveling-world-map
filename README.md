@@ -21,8 +21,10 @@ This is an npm workspaces monorepo:
 npm install
 npm run typecheck
 
-# server (Fastify + SQLite); migrations run automatically on start
-npm run dev:server
+npm run dev            # runs the server (:4000) and the client (:5173) together
+npm run dev:server     # server only (Fastify + SQLite; migrations run on start)
+npm run dev:client     # client only (Vite; proxies /api to the server)
+
 npm run db:generate -w @twm/server   # create a migration after editing the schema
 npm run db:seed -w @twm/server       # insert sample data
 ```
