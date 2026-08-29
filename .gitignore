@@ -11,3 +11,4 @@ coverage/
 .vite/
 *.sqlite
 *.sqlite-*
+.neon
