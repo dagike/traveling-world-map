@@ -1,13 +1,18 @@
-import type { PathOptions } from "leaflet";
-import { useEffect, useState } from "react";
+import type { CountryWithChildren } from "@twm/shared";
+import type { Layer, LeafletMouseEvent, PathOptions } from "leaflet";
+import { useEffect, useMemo, useState } from "react";
 import { GeoJSON } from "react-leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
+
+import { escapeHtml, mapSignature } from "../../lib/util";
 
 export interface CountryFeatureProps {
   name: string;
   /** ISO alpha-3 style code (Natural Earth ADM0_A3). */
   code: string;
 }
+
+type CountryFeature = Feature<Geometry, CountryFeatureProps>;
 
 const visitedStyle: PathOptions = {
   fillColor: "#e8590c",
@@ -16,6 +21,8 @@ const visitedStyle: PathOptions = {
   weight: 1,
 };
 
+const hoverStyle: PathOptions = { ...visitedStyle, fillOpacity: 0.8, weight: 2 };
+
 const otherStyle: PathOptions = {
   fillColor: "#94a3b8",
   fillOpacity: 0,
@@ -23,11 +30,22 @@ const otherStyle: PathOptions = {
   weight: 0.5,
 };
 
-interface Props {
-  visitedCodes: Set<string>;
+function tooltipHtml(country: CountryWithChildren): string {
+  const cityList =
+    country.cities.length > 0
+      ? `<ul style="margin:4px 0 0;padding-left:16px">${country.cities
+          .map((c) => `<li>${escapeHtml(c.name)}</li>`)
+          .join("")}</ul>`
+      : `<div style="opacity:0.7">no cities yet</div>`;
+  return `<strong>${escapeHtml(country.name)}</strong>${cityList}`;
 }
 
-export function CountriesLayer({ visitedCodes }: Props) {
+interface Props {
+  countries: CountryWithChildren[];
+  onSelectCountry: (country: CountryWithChildren) => void;
+}
+
+export function CountriesLayer({ countries, onSelectCountry }: Props) {
   const [geo, setGeo] = useState<FeatureCollection<Geometry, CountryFeatureProps> | null>(null);
 
   useEffect(() => {
@@ -45,14 +63,36 @@ export function CountriesLayer({ visitedCodes }: Props) {
     };
   }, []);
 
+  const byCode = useMemo(() => {
+    const map = new Map<string, CountryWithChildren>();
+    for (const country of countries) map.set(country.isoA3, country);
+    return map;
+  }, [countries]);
+
   if (!geo) return null;
 
-  const style = (feature?: Feature<Geometry, CountryFeatureProps>): PathOptions => {
-    const code = feature?.properties.code;
-    return code && visitedCodes.has(code) ? visitedStyle : otherStyle;
+  const style = (feature?: CountryFeature): PathOptions => {
+    const country = feature ? byCode.get(feature.properties.code) : undefined;
+    return country ? visitedStyle : otherStyle;
+  };
+
+  const onEachFeature = (feature: CountryFeature, layer: Layer): void => {
+    const country = byCode.get(feature.properties.code);
+    if (!country) return;
+    layer.bindTooltip(tooltipHtml(country), { sticky: true });
+    layer.on({
+      click: () => onSelectCountry(country),
+      mouseover: (e: LeafletMouseEvent) => e.target.setStyle(hoverStyle),
+      mouseout: (e: LeafletMouseEvent) => e.target.setStyle(visitedStyle),
+    });
   };
 
   return (
-    <GeoJSON key={[...visitedCodes].sort().join(",")} data={geo} style={style} />
+    <GeoJSON
+      key={mapSignature(countries)}
+      data={geo}
+      style={style}
+      onEachFeature={onEachFeature}
+    />
   );
 }

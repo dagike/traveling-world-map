@@ -1,19 +1,27 @@
-import { useMemo } from "react";
+import { useState } from "react";
 
 import { MapView } from "./components/Map/MapView";
+import { CountryPanel } from "./components/panels/CountryPanel";
+import { DetailPanel } from "./components/panels/DetailPanel";
 import { useMapData } from "./hooks/useMapData";
+
+type Selection = { kind: "country"; isoA3: string };
 
 export function App() {
   const { countries, error } = useMapData();
+  const [selection, setSelection] = useState<Selection | null>(null);
 
-  const visitedCodes = useMemo(
-    () => new Set(countries.map((c) => c.isoA3)),
-    [countries],
-  );
+  const selectedCountry =
+    selection?.kind === "country"
+      ? (countries.find((c) => c.isoA3 === selection.isoA3) ?? null)
+      : null;
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-      <MapView visitedCodes={visitedCodes} />
+      <MapView
+        countries={countries}
+        onSelectCountry={(c) => setSelection({ kind: "country", isoA3: c.isoA3 })}
+      />
       <div
         style={{
           position: "absolute",
@@ -33,6 +41,10 @@ export function App() {
           <span style={{ color: "crimson", fontWeight: 400 }}> — API error: {error}</span>
         )}
       </div>
+
+      <DetailPanel open={selectedCountry !== null} onClose={() => setSelection(null)}>
+        {selectedCountry && <CountryPanel country={selectedCountry} />}
+      </DetailPanel>
     </div>
   );
 }
