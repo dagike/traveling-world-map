@@ -3,6 +3,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import { config } from "./config.js";
 import { runMigrations } from "./db/client.js";
+import { cityRoutes } from "./routes/cities.js";
 import { countryRoutes } from "./routes/countries.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -14,6 +15,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   app.get("/api/health", async () => ({ status: "ok", time: new Date().toISOString() }));
   await app.register(countryRoutes);
+  await app.register(cityRoutes);
 
   return app;
 }
