@@ -5,6 +5,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 
 import { CityMarkers } from "./CityMarkers";
 import { CountriesLayer } from "./CountriesLayer";
+import { MapClickHandler } from "./MapClickHandler";
 import { ParkMarkers } from "./ParkMarkers";
 
 const WORLD_CENTER: [number, number] = [20, 0];
@@ -14,6 +15,8 @@ interface Props {
   onSelectCountry: (country: CountryWithChildren) => void;
   onSelectCity: (cityId: number) => void;
   onSelectPark: (parkId: number) => void;
+  pickActive: boolean;
+  onPick: (lat: number, lng: number) => void;
 }
 
 export function MapView({
@@ -21,6 +24,8 @@ export function MapView({
   onSelectCountry,
   onSelectCity,
   onSelectPark,
+  pickActive,
+  onPick,
 }: Props) {
   return (
     <MapContainer
@@ -37,6 +42,7 @@ export function MapView({
       <CountriesLayer countries={countries} onSelectCountry={onSelectCountry} />
       <CityMarkers countries={countries} onSelectCity={onSelectCity} />
       <ParkMarkers countries={countries} onSelectPark={onSelectPark} />
+      <MapClickHandler active={pickActive} onPick={onPick} />
     </MapContainer>
   );
 }

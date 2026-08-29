@@ -10,7 +10,7 @@ import { DetailPanel } from "./components/panels/DetailPanel";
 import { ParkPanel } from "./components/panels/ParkPanel";
 import { useAuth } from "./hooks/useAuth";
 import { useMapData } from "./hooks/useMapData";
-import { findCity, findPark } from "./lib/util";
+import { findCity, findPark, type PickHandler, type StartPick } from "./lib/util";
 
 type Selection =
   | { kind: "country"; isoA3: string }
@@ -23,6 +23,13 @@ export function App() {
   const [selection, setSelection] = useState<Selection | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [addCountryOpen, setAddCountryOpen] = useState(false);
+  const [pick, setPick] = useState<PickHandler | null>(null);
+
+  const startPick: StartPick = (onPick) => setPick(() => onPick);
+  const handlePick = (lat: number, lng: number) => {
+    pick?.(lat, lng);
+    setPick(null);
+  };
 
   const visitedCodes = useMemo(
     () => new Set(countries.map((c) => c.isoA3)),
@@ -38,7 +45,18 @@ export function App() {
   if (selection?.kind === "country") {
     const country = countries.find((c) => c.isoA3 === selection.isoA3);
     if (country) {
-      panel = <CountryPanel country={country} onSelectCity={selectCity} />;
+      panel = (
+        <CountryPanel
+          country={country}
+          isAdmin={isAdmin}
+          onSelectCity={selectCity}
+          onStartPick={startPick}
+          onCityCreated={(id) => {
+            reload();
+            selectCity(id);
+          }}
+        />
+      );
     }
   } else if (selection?.kind === "city") {
     const found = findCity(countries, selection.id);
@@ -72,7 +90,12 @@ export function App() {
         onSelectCountry={(c) => selectCountry(c.isoA3)}
         onSelectCity={selectCity}
         onSelectPark={selectPark}
+        pickActive={pick !== null}
+        onPick={handlePick}
       />
+      {pick !== null && (
+        <div className="pick-hint">click the map to set the location</div>
+      )}
       <div
         style={{
           position: "absolute",

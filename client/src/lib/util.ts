@@ -32,6 +32,9 @@ export function findPark(
   return null;
 }
 
+export type PickHandler = (lat: number, lng: number) => void;
+export type StartPick = (onPick: PickHandler) => void;
+
 export function escapeHtml(value: string): string {
   return value.replace(
     /[&<>"']/g,

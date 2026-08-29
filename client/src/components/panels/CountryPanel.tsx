@@ -1,13 +1,24 @@
 import type { CountryWithChildren } from "@twm/shared";
 
+import type { StartPick } from "../../lib/util";
+import { AddCityForm } from "../admin/AddCityForm";
 import { PhotoStrip } from "../PhotoStrip";
 
 interface Props {
   country: CountryWithChildren;
+  isAdmin: boolean;
   onSelectCity: (cityId: number) => void;
+  onStartPick: StartPick;
+  onCityCreated: (cityId: number) => void;
 }
 
-export function CountryPanel({ country, onSelectCity }: Props) {
+export function CountryPanel({
+  country,
+  isAdmin,
+  onSelectCity,
+  onStartPick,
+  onCityCreated,
+}: Props) {
   const parkCount = country.cities.reduce((n, c) => n + c.themeParks.length, 0);
 
   return (
@@ -29,6 +40,13 @@ export function CountryPanel({ country, onSelectCity }: Props) {
       )}
 
       <h3>Cities</h3>
+      {isAdmin && (
+        <AddCityForm
+          countryId={country.id}
+          onStartPick={onStartPick}
+          onCreated={onCityCreated}
+        />
+      )}
       {country.cities.length === 0 && <p className="muted">No cities added yet.</p>}
       <ul className="plain">
         {country.cities.map((city) => (
