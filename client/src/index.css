@@ -23,6 +23,12 @@
   --ring: #10b981;
   --on-accent: #ffffff;
 
+  /* Wishlist — pink */
+  --wish: #db2777;
+  --wish-hover: #be185d;
+  --wish-soft: #fce7f3;
+  --wish-border: #fbcfe8;
+
   /* Semantic */
   --danger: #dc2626;
   --danger-soft: #fef2f2;
@@ -79,6 +85,11 @@ textarea {
   justify-content: center;
   font-size: 12px;
   line-height: 1;
+}
+
+.park-marker__dot--wish {
+  background: var(--wish);
+  border-radius: 4px; /* rounded square reads differently from the visited circle */
 }
 
 /* ---- leaflet tooltip / popup theming ---- */

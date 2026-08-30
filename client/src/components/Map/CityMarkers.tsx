@@ -2,12 +2,14 @@ import type { CountryWithChildren, Photo } from "@twm/shared";
 import type { PathOptions } from "leaflet";
 import { CircleMarker, Tooltip } from "react-leaflet";
 
-const cityStyle: PathOptions = {
+const visitedCityStyle: PathOptions = {
   color: "#ffffff",
   fillColor: "#0b3d2e",
   fillOpacity: 1,
   weight: 2.5,
 };
+
+const wishlistCityStyle: PathOptions = { ...visitedCityStyle, fillColor: "#db2777" };
 
 const thumb: React.CSSProperties = {
   width: 54,
@@ -42,10 +44,12 @@ export function CityMarkers({ countries, onSelectCity, pickActive }: Props) {
       {countries.flatMap((country) =>
         country.cities.map((city) => (
           <CircleMarker
-            key={`${city.id}|${pickActive ? "p" : "n"}`}
+            key={`${city.id}|${pickActive ? "p" : "n"}|${city.status}`}
             center={[city.lat, city.lng]}
             radius={5}
-            pathOptions={cityStyle}
+            pathOptions={
+              city.status === "wishlist" ? wishlistCityStyle : visitedCityStyle
+            }
             interactive={!pickActive}
             eventHandlers={{
               click: () => {

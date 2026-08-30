@@ -58,8 +58,8 @@ export function mapSignature(countries: CountryWithChildren[]): string {
   return countries
     .map(
       (c) =>
-        `${c.isoA3}#${c.cities
-          .map((city) => `${city.id}.${city.themeParks.length}`)
+        `${c.isoA3}:${c.status}#${c.cities
+          .map((city) => `${city.id}.${city.status}.${city.themeParks.length}`)
           .join("-")}`,
     )
     .sort()

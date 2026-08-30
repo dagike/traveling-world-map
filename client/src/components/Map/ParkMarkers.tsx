@@ -2,9 +2,16 @@ import type { CountryWithChildren } from "@twm/shared";
 import L from "leaflet";
 import { Marker, Tooltip } from "react-leaflet";
 
-const parkIcon = L.divIcon({
+const visitedParkIcon = L.divIcon({
   className: "park-marker",
   html: '<span class="park-marker__dot">🎢</span>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
+const wishlistParkIcon = L.divIcon({
+  className: "park-marker",
+  html: '<span class="park-marker__dot park-marker__dot--wish">🎢</span>',
   iconSize: [20, 20],
   iconAnchor: [10, 10],
 });
@@ -25,9 +32,9 @@ export function ParkMarkers({ countries, onSelectPark, pickActive }: Props) {
             const favFlat = park.rides.find((r) => r.isFavourite && r.type === "flat");
             return (
               <Marker
-                key={`${park.id}|${pickActive ? "p" : "n"}`}
+                key={`${park.id}|${pickActive ? "p" : "n"}|${park.status}`}
                 position={[park.lat, park.lng]}
-                icon={parkIcon}
+                icon={park.status === "wishlist" ? wishlistParkIcon : visitedParkIcon}
                 interactive={!pickActive}
                 eventHandlers={{
                   click: () => {

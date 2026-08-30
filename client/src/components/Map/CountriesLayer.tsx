@@ -21,7 +21,18 @@ const visitedStyle: PathOptions = {
   weight: 1.2,
 };
 
-const hoverStyle: PathOptions = { ...visitedStyle, fillOpacity: 0.58, weight: 2.2 };
+const wishlistStyle: PathOptions = {
+  fillColor: "#f472b6",
+  fillOpacity: 0.34,
+  color: "#db2777",
+  weight: 1.2,
+};
+
+const hover = (base: PathOptions): PathOptions => ({
+  ...base,
+  fillOpacity: 0.58,
+  weight: 2.2,
+});
 
 const otherStyle: PathOptions = {
   fillColor: "#64748b",
@@ -29,6 +40,9 @@ const otherStyle: PathOptions = {
   color: "#9aa8a1",
   weight: 0.5,
 };
+
+const baseStyle = (country: CountryWithChildren): PathOptions =>
+  country.status === "wishlist" ? wishlistStyle : visitedStyle;
 
 function tooltipHtml(country: CountryWithChildren): string {
   const cityList =
@@ -75,19 +89,23 @@ export function CountriesLayer({ countries, onSelectCountry, pickActive }: Props
 
   const style = (feature?: CountryFeature): PathOptions => {
     const country = feature ? byCode.get(feature.properties.code) : undefined;
-    return { ...(country ? visitedStyle : otherStyle), interactive: !pickActive };
+    return {
+      ...(country ? baseStyle(country) : otherStyle),
+      interactive: !pickActive,
+    };
   };
 
   const onEachFeature = (feature: CountryFeature, layer: Layer): void => {
     const country = byCode.get(feature.properties.code);
     if (!country) return;
+    const base = baseStyle(country);
     layer.bindTooltip(tooltipHtml(country), { sticky: true });
     layer.on({
       click: () => {
         if (!pickActive) onSelectCountry(country);
       },
-      mouseover: (e: LeafletMouseEvent) => e.target.setStyle(hoverStyle),
-      mouseout: (e: LeafletMouseEvent) => e.target.setStyle(visitedStyle),
+      mouseover: (e: LeafletMouseEvent) => e.target.setStyle(hover(base)),
+      mouseout: (e: LeafletMouseEvent) => e.target.setStyle(base),
     });
   };
 
