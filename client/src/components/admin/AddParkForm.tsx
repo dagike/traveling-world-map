@@ -1,23 +1,33 @@
 import { useState } from "react";
 
+import type { PlaceStatus } from "@twm/shared";
+
 import { api, ApiError } from "../../api";
 import type { StartPick } from "../../lib/util";
 import { PlaceSearch } from "./PlaceSearch";
+import { StatusToggle } from "./StatusToggle";
 import "./admin.css";
 
 interface Props {
   cityId: number;
+  defaultStatus: PlaceStatus;
   onStartPick: StartPick;
   onCreated: (parkId: number) => void;
 }
 
-export function AddParkForm({ cityId, onStartPick, onCreated }: Props) {
+export function AddParkForm({
+  cityId,
+  defaultStatus,
+  onStartPick,
+  onCreated,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [info, setInfo] = useState("");
   const [year, setYear] = useState("");
+  const [status, setStatus] = useState<PlaceStatus>(defaultStatus);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +37,7 @@ export function AddParkForm({ cityId, onStartPick, onCreated }: Props) {
     setLng("");
     setInfo("");
     setYear("");
+    setStatus(defaultStatus);
     setError(null);
     setOpen(false);
   }
@@ -47,7 +58,8 @@ export function AddParkForm({ cityId, onStartPick, onCreated }: Props) {
         lat: latNum,
         lng: lngNum,
         info: info || undefined,
-        visitedYear: year ? Number(year) : undefined,
+        status,
+        visitedYear: status === "visited" && year ? Number(year) : undefined,
       });
       onCreated(park.id);
       reset();
@@ -68,6 +80,7 @@ export function AddParkForm({ cityId, onStartPick, onCreated }: Props) {
 
   return (
     <form className="admin-inline-form" onSubmit={submit}>
+      <StatusToggle value={status} onChange={setStatus} />
       <PlaceSearch
         onPick={(place) => {
           if (!name.trim()) setName(place.name);
@@ -111,12 +124,14 @@ export function AddParkForm({ cityId, onStartPick, onCreated }: Props) {
         value={info}
         onChange={(e) => setInfo(e.target.value)}
       />
-      <input
-        placeholder="Year visited (optional)"
-        type="number"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-      />
+      {status === "visited" && (
+        <input
+          placeholder="Year visited (optional)"
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        />
+      )}
       {error && <p className="error">{error}</p>}
       <div className="admin-inline-form__row">
         <button type="submit" disabled={busy}>

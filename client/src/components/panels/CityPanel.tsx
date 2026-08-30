@@ -73,6 +73,7 @@ export function CityPanel({
       {isAdmin && (
         <AddParkForm
           cityId={city.id}
+          defaultStatus={city.status}
           onStartPick={onStartPick}
           onCreated={onParkCreated}
         />

@@ -1,10 +1,11 @@
 import { useState } from "react";
 
-import type { ThemeParkWithRides } from "@twm/shared";
+import type { ThemeParkWithRides, PlaceStatus } from "@twm/shared";
 
 import { api, ApiError } from "../../api";
 import type { StartPick } from "../../lib/util";
 import { DangerButton } from "./DangerButton";
+import { StatusToggle } from "./StatusToggle";
 import { PlaceSearch } from "./PlaceSearch";
 import "./admin.css";
 
@@ -21,6 +22,7 @@ export function ParkAdmin({ park, onStartPick, onChanged, onDeleted }: Props) {
   const [lat, setLat] = useState(park.lat.toString());
   const [lng, setLng] = useState(park.lng.toString());
   const [info, setInfo] = useState(park.info ?? "");
+  const [status, setStatus] = useState<PlaceStatus>(park.status);
   const [year, setYear] = useState(park.visitedYear?.toString() ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,10 +65,11 @@ export function ParkAdmin({ park, onStartPick, onChanged, onDeleted }: Props) {
           () =>
             api.updateThemePark(park.id, {
               name,
+              status,
               lat: Number(lat),
               lng: Number(lng),
               info: info || null,
-              visitedYear: year ? Number(year) : null,
+              visitedYear: status === "visited" && year ? Number(year) : null,
             }),
           () => {
             setEditing(false);
@@ -75,6 +78,7 @@ export function ParkAdmin({ park, onStartPick, onChanged, onDeleted }: Props) {
         );
       }}
     >
+      <StatusToggle value={status} onChange={setStatus} />
       <PlaceSearch
         onPick={(place) => {
           setLat(place.lat);
@@ -98,12 +102,14 @@ export function ParkAdmin({ park, onStartPick, onChanged, onDeleted }: Props) {
         </button>
       </div>
       <input value={info} onChange={(e) => setInfo(e.target.value)} placeholder="Info" />
-      <input
-        type="number"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-        placeholder="Year visited"
-      />
+      {status === "visited" && (
+        <input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder="Year visited"
+        />
+      )}
       {error && <p className="error">{error}</p>}
       <div className="admin-inline-form__row">
         <button type="submit" disabled={busy}>

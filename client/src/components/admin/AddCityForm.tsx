@@ -1,22 +1,32 @@
 import { useState } from "react";
 
+import type { PlaceStatus } from "@twm/shared";
+
 import { api, ApiError } from "../../api";
 import type { StartPick } from "../../lib/util";
 import { PlaceSearch } from "./PlaceSearch";
+import { StatusToggle } from "./StatusToggle";
 import "./admin.css";
 
 interface Props {
   countryId: number;
+  defaultStatus: PlaceStatus;
   onStartPick: StartPick;
   onCreated: (cityId: number) => void;
 }
 
-export function AddCityForm({ countryId, onStartPick, onCreated }: Props) {
+export function AddCityForm({
+  countryId,
+  defaultStatus,
+  onStartPick,
+  onCreated,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [year, setYear] = useState("");
+  const [status, setStatus] = useState<PlaceStatus>(defaultStatus);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +35,7 @@ export function AddCityForm({ countryId, onStartPick, onCreated }: Props) {
     setLat("");
     setLng("");
     setYear("");
+    setStatus(defaultStatus);
     setError(null);
     setOpen(false);
   }
@@ -44,7 +55,8 @@ export function AddCityForm({ countryId, onStartPick, onCreated }: Props) {
         name,
         lat: latNum,
         lng: lngNum,
-        visitedYear: year ? Number(year) : undefined,
+        status,
+        visitedYear: status === "visited" && year ? Number(year) : undefined,
       });
       onCreated(city.id);
       reset();
@@ -65,6 +77,7 @@ export function AddCityForm({ countryId, onStartPick, onCreated }: Props) {
 
   return (
     <form className="admin-inline-form" onSubmit={submit}>
+      <StatusToggle value={status} onChange={setStatus} />
       <PlaceSearch
         onPick={(place) => {
           if (!name.trim()) setName(place.name);
@@ -103,12 +116,14 @@ export function AddCityForm({ countryId, onStartPick, onCreated }: Props) {
           pick on map
         </button>
       </div>
-      <input
-        placeholder="Year visited (optional)"
-        type="number"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-      />
+      {status === "visited" && (
+        <input
+          placeholder="Year visited (optional)"
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        />
+      )}
       {error && <p className="error">{error}</p>}
       <div className="admin-inline-form__row">
         <button type="submit" disabled={busy}>

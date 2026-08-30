@@ -108,6 +108,40 @@
   margin: 0;
 }
 
+/* ---- status toggle ---- */
+
+.status-toggle {
+  display: flex;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.status-toggle button {
+  flex: 1;
+  border: none;
+  background: var(--surface);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.status-toggle button + button {
+  border-left: 1px solid var(--border-strong);
+}
+
+.status-toggle button.is-active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.status-toggle button.is-active.wish {
+  background: var(--wish);
+}
+
 /* ---- place search ---- */
 
 .place-search {

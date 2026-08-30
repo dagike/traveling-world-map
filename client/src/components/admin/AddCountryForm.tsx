@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 
+import type { PlaceStatus } from "@twm/shared";
+
 import { api, ApiError } from "../../api";
 import { useCountryCatalog } from "../../hooks/useCountryCatalog";
+import { StatusToggle } from "./StatusToggle";
 import "./admin.css";
 
 interface Props {
@@ -19,6 +22,7 @@ export function AddCountryForm({ visitedCodes, onClose, onCreated }: Props) {
 
   const [code, setCode] = useState("");
   const [year, setYear] = useState("");
+  const [status, setStatus] = useState<PlaceStatus>("visited");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +42,8 @@ export function AddCountryForm({ visitedCodes, onClose, onCreated }: Props) {
       await api.createCountry({
         name: entry.name,
         isoA3: entry.code,
-        visitedYear: year ? Number(year) : undefined,
+        status,
+        visitedYear: status === "visited" && year ? Number(year) : undefined,
       });
       onCreated(entry.code);
       onClose();
@@ -54,7 +59,12 @@ export function AddCountryForm({ visitedCodes, onClose, onCreated }: Props) {
       <form className="modal-card" onSubmit={submit} onClick={(e) => e.stopPropagation()}>
         <h2>Add a country</h2>
 
-        <label htmlFor="add-country-select">Country</label>
+        <label>Status</label>
+        <StatusToggle value={status} onChange={setStatus} />
+
+        <label htmlFor="add-country-select" style={{ marginTop: 12 }}>
+          Country
+        </label>
         <select
           id="add-country-select"
           value={code}
@@ -68,16 +78,20 @@ export function AddCountryForm({ visitedCodes, onClose, onCreated }: Props) {
           ))}
         </select>
 
-        <label htmlFor="add-country-year" style={{ marginTop: 12 }}>
-          Year visited (optional)
-        </label>
-        <input
-          id="add-country-year"
-          type="number"
-          inputMode="numeric"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        />
+        {status === "visited" && (
+          <>
+            <label htmlFor="add-country-year" style={{ marginTop: 12 }}>
+              Year visited (optional)
+            </label>
+            <input
+              id="add-country-year"
+              type="number"
+              inputMode="numeric"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+            />
+          </>
+        )}
 
         {error && <p className="error">{error}</p>}
         <div className="actions">

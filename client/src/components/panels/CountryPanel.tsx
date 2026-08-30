@@ -63,6 +63,7 @@ export function CountryPanel({
       {isAdmin && (
         <AddCityForm
           countryId={country.id}
+          defaultStatus={country.status}
           onStartPick={onStartPick}
           onCreated={onCityCreated}
         />

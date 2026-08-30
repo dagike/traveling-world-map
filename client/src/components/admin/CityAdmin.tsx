@@ -1,10 +1,11 @@
 import { useState } from "react";
 
-import type { CityWithParks } from "@twm/shared";
+import type { CityWithParks, PlaceStatus } from "@twm/shared";
 
 import { api, ApiError } from "../../api";
 import type { StartPick } from "../../lib/util";
 import { DangerButton } from "./DangerButton";
+import { StatusToggle } from "./StatusToggle";
 import { PlaceSearch } from "./PlaceSearch";
 import "./admin.css";
 
@@ -22,6 +23,7 @@ export function CityAdmin({ city, onStartPick, onChanged, onDeleted }: Props) {
   const [lng, setLng] = useState(city.lng.toString());
   const [year, setYear] = useState(city.visitedYear?.toString() ?? "");
   const [notes, setNotes] = useState(city.notes ?? "");
+  const [status, setStatus] = useState<PlaceStatus>(city.status);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,9 +65,10 @@ export function CityAdmin({ city, onStartPick, onChanged, onDeleted }: Props) {
           () =>
             api.updateCity(city.id, {
               name,
+              status,
               lat: Number(lat),
               lng: Number(lng),
-              visitedYear: year ? Number(year) : null,
+              visitedYear: status === "visited" && year ? Number(year) : null,
               notes: notes || null,
             }),
           () => {
@@ -75,6 +78,7 @@ export function CityAdmin({ city, onStartPick, onChanged, onDeleted }: Props) {
         );
       }}
     >
+      <StatusToggle value={status} onChange={setStatus} />
       <PlaceSearch
         onPick={(place) => {
           setLat(place.lat);
@@ -97,12 +101,14 @@ export function CityAdmin({ city, onStartPick, onChanged, onDeleted }: Props) {
           pick on map
         </button>
       </div>
-      <input
-        type="number"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-        placeholder="Year visited"
-      />
+      {status === "visited" && (
+        <input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder="Year visited"
+        />
+      )}
       <input
         value={notes}
         onChange={(e) => setNotes(e.target.value)}

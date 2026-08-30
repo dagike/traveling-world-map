@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-import type { CountryWithChildren } from "@twm/shared";
+import type { CountryWithChildren, PlaceStatus } from "@twm/shared";
 
 import { api, ApiError } from "../../api";
 import { DangerButton } from "./DangerButton";
+import { StatusToggle } from "./StatusToggle";
 import "./admin.css";
 
 interface Props {
@@ -17,6 +18,7 @@ export function CountryAdmin({ country, onChanged, onDeleted }: Props) {
   const [name, setName] = useState(country.name);
   const [year, setYear] = useState(country.visitedYear?.toString() ?? "");
   const [notes, setNotes] = useState(country.notes ?? "");
+  const [status, setStatus] = useState<PlaceStatus>(country.status);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,7 +62,8 @@ export function CountryAdmin({ country, onChanged, onDeleted }: Props) {
           () =>
             api.updateCountry(country.id, {
               name,
-              visitedYear: year ? Number(year) : null,
+              status,
+              visitedYear: status === "visited" && year ? Number(year) : null,
               notes: notes || null,
             }),
           () => {
@@ -70,13 +73,16 @@ export function CountryAdmin({ country, onChanged, onDeleted }: Props) {
         );
       }}
     >
+      <StatusToggle value={status} onChange={setStatus} />
       <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <input
-        type="number"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-        placeholder="Year visited"
-      />
+      {status === "visited" && (
+        <input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder="Year visited"
+        />
+      )}
       <input
         value={notes}
         onChange={(e) => setNotes(e.target.value)}

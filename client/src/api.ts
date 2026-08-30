@@ -2,6 +2,7 @@ import type {
   City,
   Country,
   CountryWithChildren,
+  PlaceStatus,
   Ride,
   RideType,
   Stats,
@@ -62,6 +63,7 @@ export interface NewCountry {
   name: string;
   isoA3: string;
   visitedYear?: number;
+  status?: PlaceStatus;
 }
 
 export interface NewCity {
@@ -69,6 +71,7 @@ export interface NewCity {
   lat: number;
   lng: number;
   visitedYear?: number;
+  status?: PlaceStatus;
 }
 
 export interface NewThemePark {
@@ -77,6 +80,7 @@ export interface NewThemePark {
   lng: number;
   info?: string;
   visitedYear?: number;
+  status?: PlaceStatus;
 }
 
 export interface NewRide {
@@ -108,7 +112,12 @@ export const api = {
     }),
   updateCountry: (
     id: number,
-    patch: { name?: string; visitedYear?: number | null; notes?: string | null },
+    patch: {
+      name?: string;
+      visitedYear?: number | null;
+      notes?: string | null;
+      status?: PlaceStatus;
+    },
   ) => request<Country>(`/countries/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
   updateCity: (
     id: number,
@@ -118,6 +127,7 @@ export const api = {
       lng?: number;
       visitedYear?: number | null;
       notes?: string | null;
+      status?: PlaceStatus;
     },
   ) => request<City>(`/cities/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
   updateThemePark: (
@@ -128,6 +138,7 @@ export const api = {
       lng?: number;
       info?: string | null;
       visitedYear?: number | null;
+      status?: PlaceStatus;
     },
   ) =>
     request<ThemePark>(`/theme-parks/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
