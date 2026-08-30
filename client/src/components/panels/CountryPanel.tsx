@@ -4,6 +4,7 @@ import { plural, type StartPick } from "../../lib/util";
 import { AddCityForm } from "../admin/AddCityForm";
 import { CountryAdmin } from "../admin/CountryAdmin";
 import { PhotoStrip } from "../PhotoStrip";
+import { StatusBadge } from "../StatusBadge";
 
 interface Props {
   country: CountryWithChildren;
@@ -28,9 +29,14 @@ export function CountryPanel({
 
   return (
     <div>
-      <h2>{country.name}</h2>
+      <h2>
+        {country.name}
+        <StatusBadge status={country.status} />
+      </h2>
       <div className="muted">
-        {country.visitedYear ? `Visited ${country.visitedYear} · ` : ""}
+        {country.status === "visited" && country.visitedYear
+          ? `Visited ${country.visitedYear} · `
+          : ""}
         {plural(country.cities.length, "city", "cities")} ·{" "}
         {plural(parkCount, "theme park")}
       </div>
@@ -39,8 +45,12 @@ export function CountryPanel({
         <CountryAdmin country={country} onChanged={onChanged} onDeleted={onDeleted} />
       )}
 
-      <h3>Photos</h3>
-      <PhotoStrip photos={country.photos} />
+      {country.status === "visited" && (
+        <>
+          <h3>Photos</h3>
+          <PhotoStrip photos={country.photos} />
+        </>
+      )}
 
       {country.notes && (
         <>

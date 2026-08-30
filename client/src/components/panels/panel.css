@@ -67,6 +67,29 @@
   letter-spacing: -0.02em;
 }
 
+.status-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.status-badge--visited {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+}
+
+.status-badge--wishlist {
+  background: var(--wish-soft);
+  color: var(--wish-hover);
+}
+
 .detail-panel h3,
 .stats-panel h3 {
   margin: 22px 0 10px;

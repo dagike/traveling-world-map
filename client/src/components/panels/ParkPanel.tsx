@@ -5,6 +5,7 @@ import { AddRideForm } from "../admin/AddRideForm";
 import { ParkAdmin } from "../admin/ParkAdmin";
 import { RideRow } from "../admin/RideRow";
 import { PhotoStrip } from "../PhotoStrip";
+import { StatusBadge } from "../StatusBadge";
 
 interface Props {
   city: CityWithParks;
@@ -27,6 +28,7 @@ export function ParkPanel({
 }: Props) {
   const favCoaster = park.rides.find((r) => r.isFavourite && r.type === "coaster");
   const favFlat = park.rides.find((r) => r.isFavourite && r.type === "flat");
+  const isWishlist = park.status === "wishlist";
 
   return (
     <div>
@@ -34,8 +36,13 @@ export function ParkPanel({
         ← {city.name}
       </button>
 
-      <h2>{park.name}</h2>
-      {park.visitedYear && <div className="muted">Visited {park.visitedYear}</div>}
+      <h2>
+        {park.name}
+        <StatusBadge status={park.status} />
+      </h2>
+      {!isWishlist && park.visitedYear && (
+        <div className="muted">Visited {park.visitedYear}</div>
+      )}
 
       {isAdmin && (
         <ParkAdmin
@@ -46,8 +53,12 @@ export function ParkPanel({
         />
       )}
 
-      <h3>Photos</h3>
-      <PhotoStrip photos={park.photos} />
+      {!isWishlist && (
+        <>
+          <h3>Photos</h3>
+          <PhotoStrip photos={park.photos} />
+        </>
+      )}
 
       {park.info && (
         <>
@@ -56,7 +67,7 @@ export function ParkPanel({
         </>
       )}
 
-      <h3>Favourites</h3>
+      <h3>{isWishlist ? "Want to ride" : "Favourites"}</h3>
       <p className={favCoaster ? "fav" : "muted"}>
         ★ Coaster: {favCoaster ? favCoaster.name : "not set"}
       </p>
