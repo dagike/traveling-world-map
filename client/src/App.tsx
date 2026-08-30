@@ -7,6 +7,7 @@ import { ChangePasswordModal } from "./components/admin/ChangePasswordModal";
 import { LoginModal } from "./components/admin/LoginModal";
 import { MapView } from "./components/Map/MapView";
 import { StatsView } from "./components/StatsView";
+import { WishlistView } from "./components/WishlistView";
 import { CityPanel } from "./components/panels/CityPanel";
 import { CountryPanel } from "./components/panels/CountryPanel";
 import { DetailPanel } from "./components/panels/DetailPanel";
@@ -28,7 +29,9 @@ export function App() {
   const [addCountryOpen, setAddCountryOpen] = useState(false);
   const [changePwOpen, setChangePwOpen] = useState(false);
   const [pick, setPick] = useState<PickHandler | null>(null);
-  const [statsOpen, setStatsOpen] = useState(false);
+  const [sidePanel, setSidePanel] = useState<"stats" | "wishlist" | null>(null);
+  const toggleSide = (which: "stats" | "wishlist") =>
+    setSidePanel((cur) => (cur === which ? null : which));
 
   const startPick: StartPick = (onPick) => setPick(() => onPick);
   const handlePick = (lat: number, lng: number) => {
@@ -131,8 +134,11 @@ export function App() {
         <span className="app-header__title">my world</span>
         {loading && <span className="app-badge">loading…</span>}
         {error && <span className="app-badge error">API error: {error}</span>}
-        <button type="button" onClick={() => setStatsOpen((v) => !v)}>
-          {statsOpen ? "hide stats" : "stats"}
+        <button type="button" onClick={() => toggleSide("wishlist")}>
+          {sidePanel === "wishlist" ? "hide wishlist" : "wishlist"}
+        </button>
+        <button type="button" onClick={() => toggleSide("stats")}>
+          {sidePanel === "stats" ? "hide stats" : "stats"}
         </button>
         <AdminBar
           isAdmin={isAdmin}
@@ -151,8 +157,18 @@ export function App() {
         </div>
       )}
 
-      {statsOpen && (
-        <StatsView countries={countries} onClose={() => setStatsOpen(false)} />
+      {sidePanel === "stats" && (
+        <StatsView countries={countries} onClose={() => setSidePanel(null)} />
+      )}
+
+      {sidePanel === "wishlist" && (
+        <WishlistView
+          countries={countries}
+          onSelectCountry={selectCountry}
+          onSelectCity={selectCity}
+          onSelectPark={selectPark}
+          onClose={() => setSidePanel(null)}
+        />
       )}
 
       <DetailPanel open={panel !== null} onClose={close}>
