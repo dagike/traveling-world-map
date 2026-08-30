@@ -12,9 +12,10 @@ const parkIcon = L.divIcon({
 interface Props {
   countries: CountryWithChildren[];
   onSelectPark: (parkId: number) => void;
+  pickActive: boolean;
 }
 
-export function ParkMarkers({ countries, onSelectPark }: Props) {
+export function ParkMarkers({ countries, onSelectPark, pickActive }: Props) {
   return (
     <>
       {countries.flatMap((country) =>
@@ -24,10 +25,15 @@ export function ParkMarkers({ countries, onSelectPark }: Props) {
             const favFlat = park.rides.find((r) => r.isFavourite && r.type === "flat");
             return (
               <Marker
-                key={park.id}
+                key={`${park.id}|${pickActive ? "p" : "n"}`}
                 position={[park.lat, park.lng]}
                 icon={parkIcon}
-                eventHandlers={{ click: () => onSelectPark(park.id) }}
+                interactive={!pickActive}
+                eventHandlers={{
+                  click: () => {
+                    if (!pickActive) onSelectPark(park.id);
+                  },
+                }}
               >
                 <Tooltip direction="top" offset={[0, -10]}>
                   <div style={{ maxWidth: 220 }}>

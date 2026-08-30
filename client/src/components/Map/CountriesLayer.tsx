@@ -43,9 +43,11 @@ function tooltipHtml(country: CountryWithChildren): string {
 interface Props {
   countries: CountryWithChildren[];
   onSelectCountry: (country: CountryWithChildren) => void;
+  /** While true the layer ignores clicks so map-location picking works. */
+  pickActive: boolean;
 }
 
-export function CountriesLayer({ countries, onSelectCountry }: Props) {
+export function CountriesLayer({ countries, onSelectCountry, pickActive }: Props) {
   const [geo, setGeo] = useState<FeatureCollection<Geometry, CountryFeatureProps> | null>(null);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export function CountriesLayer({ countries, onSelectCountry }: Props) {
 
   const style = (feature?: CountryFeature): PathOptions => {
     const country = feature ? byCode.get(feature.properties.code) : undefined;
-    return country ? visitedStyle : otherStyle;
+    return { ...(country ? visitedStyle : otherStyle), interactive: !pickActive };
   };
 
   const onEachFeature = (feature: CountryFeature, layer: Layer): void => {
@@ -81,7 +83,9 @@ export function CountriesLayer({ countries, onSelectCountry }: Props) {
     if (!country) return;
     layer.bindTooltip(tooltipHtml(country), { sticky: true });
     layer.on({
-      click: () => onSelectCountry(country),
+      click: () => {
+        if (!pickActive) onSelectCountry(country);
+      },
       mouseover: (e: LeafletMouseEvent) => e.target.setStyle(hoverStyle),
       mouseout: (e: LeafletMouseEvent) => e.target.setStyle(visitedStyle),
     });
@@ -89,7 +93,7 @@ export function CountriesLayer({ countries, onSelectCountry }: Props) {
 
   return (
     <GeoJSON
-      key={mapSignature(countries)}
+      key={`${mapSignature(countries)}|${pickActive ? "pick" : "nav"}`}
       data={geo}
       style={style}
       onEachFeature={onEachFeature}

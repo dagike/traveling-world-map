@@ -33,19 +33,25 @@ function previewPhotos(photos: Photo[]): Photo[] {
 interface Props {
   countries: CountryWithChildren[];
   onSelectCity: (cityId: number) => void;
+  pickActive: boolean;
 }
 
-export function CityMarkers({ countries, onSelectCity }: Props) {
+export function CityMarkers({ countries, onSelectCity, pickActive }: Props) {
   return (
     <>
       {countries.flatMap((country) =>
         country.cities.map((city) => (
           <CircleMarker
-            key={city.id}
+            key={`${city.id}|${pickActive ? "p" : "n"}`}
             center={[city.lat, city.lng]}
             radius={5}
             pathOptions={cityStyle}
-            eventHandlers={{ click: () => onSelectCity(city.id) }}
+            interactive={!pickActive}
+            eventHandlers={{
+              click: () => {
+                if (!pickActive) onSelectCity(city.id);
+              },
+            }}
           >
             <Tooltip direction="top" offset={[0, -6]}>
               <div style={{ maxWidth: 190 }}>

@@ -39,9 +39,21 @@ export function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <CountriesLayer countries={countries} onSelectCountry={onSelectCountry} />
-      <CityMarkers countries={countries} onSelectCity={onSelectCity} />
-      <ParkMarkers countries={countries} onSelectPark={onSelectPark} />
+      <CountriesLayer
+        countries={countries}
+        onSelectCountry={onSelectCountry}
+        pickActive={pickActive}
+      />
+      <CityMarkers
+        countries={countries}
+        onSelectCity={onSelectCity}
+        pickActive={pickActive}
+      />
+      <ParkMarkers
+        countries={countries}
+        onSelectPark={onSelectPark}
+        pickActive={pickActive}
+      />
       <MapClickHandler active={pickActive} onPick={onPick} />
     </MapContainer>
   );
