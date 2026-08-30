@@ -5,6 +5,7 @@ import type { ThemeParkWithRides } from "@twm/shared";
 import { api, ApiError } from "../../api";
 import type { StartPick } from "../../lib/util";
 import { DangerButton } from "./DangerButton";
+import { PlaceSearch } from "./PlaceSearch";
 import "./admin.css";
 
 interface Props {
@@ -74,6 +75,12 @@ export function ParkAdmin({ park, onStartPick, onChanged, onDeleted }: Props) {
         );
       }}
     >
+      <PlaceSearch
+        onPick={(place) => {
+          setLat(place.lat);
+          setLng(place.lng);
+        }}
+      />
       <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
       <div className="admin-inline-form__row">
         <input value={lat} onChange={(e) => setLat(e.target.value)} placeholder="lat" />
