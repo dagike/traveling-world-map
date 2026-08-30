@@ -26,7 +26,7 @@ export function hashPassword(password: string): string {
   return `${salt}:${hash}`;
 }
 
-function verifyScryptHash(password: string, stored: string): boolean {
+export function verifyScryptHash(password: string, stored: string): boolean {
   const [salt, hash] = stored.split(":");
   if (!salt || !hash) return false;
   const expected = Buffer.from(hash, "hex");
@@ -59,8 +59,8 @@ export function verifyToken(token: string | undefined): boolean {
   }
 }
 
-export function checkPassword(password: unknown): boolean {
-  if (typeof password !== "string" || password.length === 0) return false;
+/** Fallback password check against env config, used when no hash is stored in the DB. */
+export function checkEnvPassword(password: string): boolean {
   if (config.adminPasswordHash) {
     return verifyScryptHash(password, config.adminPasswordHash);
   }

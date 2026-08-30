@@ -150,4 +150,9 @@ export const api = {
     setToken(newToken);
   },
   logout: () => setToken(null),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<void>("/admin/password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
 };

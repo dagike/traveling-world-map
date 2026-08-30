@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
-import { checkPassword, createToken } from "../auth.js";
+import { verifyAdminPassword } from "../adminPassword.js";
+import { createToken } from "../auth.js";
 
 const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const MAX_ATTEMPTS = 10;
@@ -36,7 +37,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         return reply.code(429).send({ error: "too many attempts, try again later" });
       }
       const { password } = req.body as { password: string };
-      if (!checkPassword(password)) {
+      if (!(await verifyAdminPassword(password))) {
         return reply.code(401).send({ error: "incorrect password" });
       }
       return { token: createToken() };

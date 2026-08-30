@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import "./app.css";
 import { AddCountryForm } from "./components/admin/AddCountryForm";
 import { AdminBar } from "./components/admin/AdminBar";
+import { ChangePasswordModal } from "./components/admin/ChangePasswordModal";
 import { LoginModal } from "./components/admin/LoginModal";
 import { MapView } from "./components/Map/MapView";
 import { StatsView } from "./components/StatsView";
@@ -25,6 +26,7 @@ export function App() {
   const [selection, setSelection] = useState<Selection | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [addCountryOpen, setAddCountryOpen] = useState(false);
+  const [changePwOpen, setChangePwOpen] = useState(false);
   const [pick, setPick] = useState<PickHandler | null>(null);
   const [statsOpen, setStatsOpen] = useState(false);
 
@@ -137,6 +139,7 @@ export function App() {
           onLoginClick={() => setLoginOpen(true)}
           onLogout={logout}
           onAddCountry={() => setAddCountryOpen(true)}
+          onChangePassword={() => setChangePwOpen(true)}
         />
       </div>
 
@@ -158,6 +161,10 @@ export function App() {
 
       {loginOpen && (
         <LoginModal onClose={() => setLoginOpen(false)} onSubmit={login} />
+      )}
+
+      {changePwOpen && (
+        <ChangePasswordModal onClose={() => setChangePwOpen(false)} />
       )}
 
       {addCountryOpen && (

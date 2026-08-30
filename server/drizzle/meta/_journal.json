@@ -8,6 +8,13 @@
       "when": 1788032512435,
       "tag": "0000_purple_boom_boom",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788050393874,
+      "tag": "0001_yellow_firestar",
+      "breakpoints": true
     }
   ]
 }

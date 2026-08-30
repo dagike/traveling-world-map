@@ -5,9 +5,16 @@ interface Props {
   onLoginClick: () => void;
   onLogout: () => void;
   onAddCountry: () => void;
+  onChangePassword: () => void;
 }
 
-export function AdminBar({ isAdmin, onLoginClick, onLogout, onAddCountry }: Props) {
+export function AdminBar({
+  isAdmin,
+  onLoginClick,
+  onLogout,
+  onAddCountry,
+  onChangePassword,
+}: Props) {
   return (
     <div className="admin-bar">
       {isAdmin ? (
@@ -15,6 +22,9 @@ export function AdminBar({ isAdmin, onLoginClick, onLogout, onAddCountry }: Prop
           <span className="dot">●</span> admin mode
           <button type="button" onClick={onAddCountry}>
             + country
+          </button>
+          <button type="button" onClick={onChangePassword}>
+            password
           </button>
           <button type="button" onClick={onLogout}>
             log out

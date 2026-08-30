@@ -3,6 +3,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import { adminGuard } from "./auth.js";
 import { assertConfig, config, isProduction } from "./config.js";
+import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
 import { cityRoutes } from "./routes/cities.js";
 import { countryRoutes } from "./routes/countries.js";
@@ -28,6 +29,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   app.get("/api/health", async () => ({ status: "ok", time: new Date().toISOString() }));
   await app.register(authRoutes);
+  await app.register(adminRoutes);
   await app.register(countryRoutes);
   await app.register(cityRoutes);
   await app.register(themeParkRoutes);
