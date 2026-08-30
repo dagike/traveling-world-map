@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { api, ApiError } from "../../api";
 import type { StartPick } from "../../lib/util";
+import { PlaceSearch } from "./PlaceSearch";
 import "./admin.css";
 
 interface Props {
@@ -64,6 +65,13 @@ export function AddCityForm({ countryId, onStartPick, onCreated }: Props) {
 
   return (
     <form className="admin-inline-form" onSubmit={submit}>
+      <PlaceSearch
+        onPick={(place) => {
+          if (!name.trim()) setName(place.name);
+          setLat(place.lat);
+          setLng(place.lng);
+        }}
+      />
       <input
         placeholder="City name"
         value={name}
