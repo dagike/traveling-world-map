@@ -1,11 +1,11 @@
-import type { Country } from "@twm/shared";
+import type { Country, PlaceStatus } from "@twm/shared";
 import { eq } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 
 import { db } from "../db/client.js";
 import type { CountryRow } from "../db/schema.js";
 import { countries } from "../db/schema.js";
-import { isUniqueViolation, parseId, photosSchema } from "./util.js";
+import { isUniqueViolation, parseId, photosSchema, statusSchema } from "./util.js";
 
 export function toCountry(row: CountryRow): Country {
   return {
@@ -14,6 +14,7 @@ export function toCountry(row: CountryRow): Country {
     isoA3: row.isoA3,
     notes: row.notes ?? undefined,
     visitedYear: row.visitedYear ?? undefined,
+    status: row.status,
     photos: row.photos,
   };
 }
@@ -23,6 +24,7 @@ interface CountryInput {
   isoA3: string;
   notes?: string | null;
   visitedYear?: number | null;
+  status?: PlaceStatus;
   photos?: Country["photos"];
 }
 
@@ -31,6 +33,7 @@ const properties = {
   isoA3: { type: "string", minLength: 3, maxLength: 3 },
   notes: { type: ["string", "null"] },
   visitedYear: { type: ["integer", "null"], minimum: 0 },
+  status: statusSchema,
   photos: photosSchema,
 } as const;
 
@@ -73,6 +76,7 @@ export async function countryRoutes(app: FastifyInstance): Promise<void> {
             isoA3: body.isoA3.toUpperCase(),
             notes: body.notes ?? null,
             visitedYear: body.visitedYear ?? null,
+            status: body.status ?? "visited",
             photos: body.photos ?? [],
           })
           .returning();
@@ -103,6 +107,7 @@ export async function countryRoutes(app: FastifyInstance): Promise<void> {
       if (body.isoA3 !== undefined) patch.isoA3 = body.isoA3.toUpperCase();
       if (body.notes !== undefined) patch.notes = body.notes;
       if (body.visitedYear !== undefined) patch.visitedYear = body.visitedYear;
+      if (body.status !== undefined) patch.status = body.status;
       if (body.photos !== undefined) patch.photos = body.photos;
 
       if (Object.keys(patch).length === 0) {

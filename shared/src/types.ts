@@ -11,6 +11,9 @@ export interface Photo {
 
 export type RideType = "coaster" | "flat";
 
+/** Whether a place has been visited or is on the want-to-go wishlist. */
+export type PlaceStatus = "visited" | "wishlist";
+
 export interface Ride {
   id: number;
   parkId: number;
@@ -28,6 +31,7 @@ export interface ThemePark {
   lng: number;
   info?: string;
   visitedYear?: number;
+  status: PlaceStatus;
   photos: Photo[];
 }
 
@@ -39,6 +43,7 @@ export interface City {
   lng: number;
   notes?: string;
   visitedYear?: number;
+  status: PlaceStatus;
   photos: Photo[];
 }
 
@@ -50,6 +55,7 @@ export interface Country {
   isoA3: string;
   notes?: string;
   visitedYear?: number;
+  status: PlaceStatus;
   photos: Photo[];
 }
 

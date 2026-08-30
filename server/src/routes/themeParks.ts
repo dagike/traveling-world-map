@@ -1,11 +1,11 @@
-import type { ThemePark } from "@twm/shared";
+import type { ThemePark, PlaceStatus } from "@twm/shared";
 import { eq } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 
 import { db } from "../db/client.js";
 import type { ThemeParkRow } from "../db/schema.js";
 import { cities, themeParks } from "../db/schema.js";
-import { parseId, photosSchema } from "./util.js";
+import { parseId, photosSchema, statusSchema } from "./util.js";
 
 export function toThemePark(row: ThemeParkRow): ThemePark {
   return {
@@ -16,6 +16,7 @@ export function toThemePark(row: ThemeParkRow): ThemePark {
     lng: row.lng,
     info: row.info ?? undefined,
     visitedYear: row.visitedYear ?? undefined,
+    status: row.status,
     photos: row.photos,
   };
 }
@@ -26,6 +27,7 @@ interface ThemeParkInput {
   lng: number;
   info?: string | null;
   visitedYear?: number | null;
+  status?: PlaceStatus;
   photos?: ThemePark["photos"];
 }
 
@@ -35,6 +37,7 @@ const properties = {
   lng: { type: "number", minimum: -180, maximum: 180 },
   info: { type: ["string", "null"] },
   visitedYear: { type: ["integer", "null"], minimum: 0 },
+  status: statusSchema,
   photos: photosSchema,
 } as const;
 
@@ -89,6 +92,7 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
           lng: body.lng,
           info: body.info ?? null,
           visitedYear: body.visitedYear ?? null,
+          status: body.status ?? "visited",
           photos: body.photos ?? [],
         })
         .returning();
@@ -110,6 +114,7 @@ export async function themeParkRoutes(app: FastifyInstance): Promise<void> {
       if (body.lng !== undefined) patch.lng = body.lng;
       if (body.info !== undefined) patch.info = body.info;
       if (body.visitedYear !== undefined) patch.visitedYear = body.visitedYear;
+      if (body.status !== undefined) patch.status = body.status;
       if (body.photos !== undefined) patch.photos = body.photos;
 
       if (Object.keys(patch).length === 0) {

@@ -15,6 +15,9 @@ export function isUniqueViolation(err: unknown): boolean {
   );
 }
 
+/** JSON schema fragment for a place status. */
+export const statusSchema = { type: "string", enum: ["visited", "wishlist"] } as const;
+
 /** JSON schema fragment for a `photos` array of `{ url, caption? }`. */
 export const photosSchema = {
   type: "array",

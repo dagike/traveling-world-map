@@ -1,4 +1,4 @@
-import type { Photo, RideType } from "@twm/shared";
+import type { Photo, PlaceStatus, RideType } from "@twm/shared";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
@@ -16,6 +16,9 @@ const photos = () =>
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
+const status = () =>
+  text("status").$type<PlaceStatus>().notNull().default("visited");
+
 export const countries = pgTable("countries", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -23,6 +26,7 @@ export const countries = pgTable("countries", {
   isoA3: text("iso_a3").notNull().unique(),
   notes: text("notes"),
   visitedYear: integer("visited_year"),
+  status: status(),
   photos: photos(),
   createdAt: createdAt(),
 });
@@ -37,6 +41,7 @@ export const cities = pgTable("cities", {
   lng: doublePrecision("lng").notNull(),
   notes: text("notes"),
   visitedYear: integer("visited_year"),
+  status: status(),
   photos: photos(),
   createdAt: createdAt(),
 });
@@ -51,6 +56,7 @@ export const themeParks = pgTable("theme_parks", {
   lng: doublePrecision("lng").notNull(),
   info: text("info"),
   visitedYear: integer("visited_year"),
+  status: status(),
   photos: photos(),
   createdAt: createdAt(),
 });
