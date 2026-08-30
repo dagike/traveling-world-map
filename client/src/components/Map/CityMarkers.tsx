@@ -3,22 +3,22 @@ import type { PathOptions } from "leaflet";
 import { CircleMarker, Tooltip } from "react-leaflet";
 
 const cityStyle: PathOptions = {
-  color: "#1d4ed8",
-  fillColor: "#3b82f6",
-  fillOpacity: 0.9,
-  weight: 2,
+  color: "#ffffff",
+  fillColor: "#0b3d2e",
+  fillOpacity: 1,
+  weight: 2.5,
 };
 
 const thumb: React.CSSProperties = {
   width: 54,
   height: 38,
-  borderRadius: 4,
-  background: "#e2e8f0",
+  borderRadius: 6,
+  background: "var(--surface-3, #e9efeb)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: 9,
-  color: "#64748b",
+  color: "var(--text-muted, #5c6b64)",
 };
 
 function previewPhotos(photos: Photo[]): Photo[] {

@@ -6,25 +6,36 @@
 
 .app-header {
   position: absolute;
-  top: 12px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
   max-width: calc(100vw - 24px);
-  padding: 6px 14px;
+  padding: 8px 10px 8px 18px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-md);
+  color: var(--text);
 }
 
 .app-header__title {
+  font-family: var(--font-display);
   font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.app-header__title::first-letter {
+  color: var(--accent);
 }
 
 .app-header .admin-bar {
@@ -32,44 +43,54 @@
 }
 
 .app-header > button {
-  font: inherit;
   font-size: 0.8rem;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  border-radius: 6px;
-  padding: 3px 8px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 5px 12px;
   cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
 }
 
 .app-header > button:hover {
-  border-color: #e8590c;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-hover);
 }
 
 .app-badge {
   font-size: 0.8rem;
-  font-weight: 400;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 .app-badge.error {
-  color: crimson;
+  color: var(--danger);
 }
 
 .app-empty {
   position: absolute;
-  top: 64px;
+  top: 68px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 8px;
-  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 16px;
   font-size: 0.85rem;
-  color: #475569;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (max-width: 520px) {
   .app-header {
     font-size: 0.9rem;
+    gap: 8px;
+  }
+  .app-header__title {
+    font-size: 1rem;
   }
 }

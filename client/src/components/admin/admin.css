@@ -4,48 +4,67 @@
   gap: 8px;
   margin-top: 6px;
   font-size: 0.8rem;
-  font-weight: 400;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .admin-bar button {
   font: inherit;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  border-radius: 6px;
-  padding: 3px 8px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 5px 12px;
   cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 
 .admin-bar button:hover {
-  border-color: #e8590c;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-hover);
 }
 
 .admin-bar .dot {
-  color: #16a34a;
+  color: var(--accent);
 }
+
+/* ---- inline add/edit forms ---- */
 
 .admin-inline-form {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 8px;
-  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  background: var(--surface-2);
 }
 
-.admin-inline-form input {
+.admin-inline-form input,
+.admin-inline-form select {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  padding: 7px 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
   font: inherit;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.admin-inline-form input:focus,
+.admin-inline-form select:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+  border-color: var(--accent);
 }
 
 .admin-inline-form__row {
   display: flex;
   gap: 6px;
+  align-items: center;
 }
 
 .admin-inline-form__row input {
@@ -54,52 +73,77 @@
 
 .admin-inline-form button {
   font: inherit;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  border-radius: 6px;
-  padding: 6px 10px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 12px;
   cursor: pointer;
   white-space: nowrap;
 }
 
+.admin-inline-form button:hover {
+  border-color: var(--accent);
+}
+
 .admin-inline-form button[type="submit"] {
-  border-color: #e8590c;
-  background: #e8590c;
-  color: #ffffff;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.admin-inline-form button[type="submit"]:hover {
+  background: var(--accent-hover);
+}
+
+.admin-inline-form button:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .admin-inline-form .error {
-  color: crimson;
+  color: var(--danger);
   font-size: 0.85rem;
   margin: 0;
 }
 
+/* ---- edit / delete action rows ---- */
+
 .admin-actions {
   display: flex;
   gap: 6px;
-  margin: 8px 0;
+  margin: 10px 0;
 }
 
 .admin-actions button,
 .ride-row__actions button {
   font: inherit;
   font-size: 0.85rem;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  border-radius: 6px;
-  padding: 4px 10px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 5px 12px;
   cursor: pointer;
+}
+
+.admin-actions button:hover,
+.ride-row__actions button:hover {
+  border-color: var(--accent);
 }
 
 .admin-actions .danger,
 .ride-row__actions .danger {
-  border-color: #dc2626;
-  color: #dc2626;
+  border-color: var(--danger);
+  color: var(--danger);
+  background: var(--danger-soft);
 }
 
 .admin-actions .danger.armed,
 .ride-row__actions .danger.armed {
-  background: #dc2626;
+  background: var(--danger);
   color: #ffffff;
 }
 
@@ -109,86 +153,114 @@
   margin-top: 6px;
 }
 
+/* ---- pick-on-map hint ---- */
+
 .pick-hint {
   position: absolute;
-  top: 12px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1200;
-  background: #0f172a;
+  background: var(--text);
   color: #ffffff;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 999px;
   font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
 }
+
+/* ---- modal ---- */
 
 .modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(16, 33, 27, 0.42);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .modal-card {
-  background: #ffffff;
-  color: #0f172a;
-  border-radius: 12px;
-  padding: 20px;
-  width: min(320px, calc(100vw - 32px));
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  width: min(340px, calc(100vw - 32px));
+  box-shadow: var(--shadow-md);
 }
 
 .modal-card h2 {
-  margin: 0 0 12px;
-  font-size: 1.1rem;
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
 }
 
 .modal-card label {
   display: block;
   font-size: 0.85rem;
-  margin-bottom: 4px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: var(--text-muted);
 }
 
-.modal-card input {
+.modal-card input,
+.modal-card select {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  padding: 9px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
   font: inherit;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.modal-card input:focus,
+.modal-card select:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+  border-color: var(--accent);
 }
 
 .modal-card .error {
-  color: crimson;
+  color: var(--danger);
   font-size: 0.85rem;
-  margin: 8px 0 0;
+  margin: 10px 0 0;
 }
 
 .modal-card .actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 18px;
 }
 
 .modal-card .actions button {
   font: inherit;
-  border-radius: 6px;
-  padding: 6px 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 14px;
   cursor: pointer;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .modal-card .actions button[type="submit"] {
-  border-color: #e8590c;
-  background: #e8590c;
-  color: #ffffff;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.modal-card .actions button[type="submit"]:hover {
+  background: var(--accent-hover);
 }
 
 .modal-card .actions button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: default;
 }

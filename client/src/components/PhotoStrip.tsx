@@ -9,13 +9,14 @@ const box: React.CSSProperties = {
   flex: "0 0 auto",
   width: 120,
   height: 84,
-  borderRadius: 6,
-  background: "#e2e8f0",
+  borderRadius: 8,
+  background: "var(--surface-3, #e9efeb)",
+  border: "1px solid var(--border, #dbe4df)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: 11,
-  color: "#64748b",
+  color: "var(--text-muted, #5c6b64)",
   overflow: "hidden",
 };
 

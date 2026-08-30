@@ -15,18 +15,18 @@ export interface CountryFeatureProps {
 type CountryFeature = Feature<Geometry, CountryFeatureProps>;
 
 const visitedStyle: PathOptions = {
-  fillColor: "#e8590c",
-  fillOpacity: 0.55,
-  color: "#e8590c",
-  weight: 1,
+  fillColor: "#10b981",
+  fillOpacity: 0.34,
+  color: "#047857",
+  weight: 1.2,
 };
 
-const hoverStyle: PathOptions = { ...visitedStyle, fillOpacity: 0.8, weight: 2 };
+const hoverStyle: PathOptions = { ...visitedStyle, fillOpacity: 0.58, weight: 2.2 };
 
 const otherStyle: PathOptions = {
-  fillColor: "#94a3b8",
+  fillColor: "#64748b",
   fillOpacity: 0,
-  color: "#94a3b8",
+  color: "#9aa8a1",
   weight: 0.5,
 };
 

@@ -126,7 +126,7 @@ export function App() {
       )}
 
       <div className="app-header">
-        <span className="app-header__title">traveling world map</span>
+        <span className="app-header__title">my world</span>
         {loading && <span className="app-badge">loading…</span>}
         {error && <span className="app-badge error">API error: {error}</span>}
         <button type="button" onClick={() => setStatsOpen((v) => !v)}>
