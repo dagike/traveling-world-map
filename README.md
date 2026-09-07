@@ -5,6 +5,17 @@ and my favourite coaster / flat ride at each park.
 
 Data is hierarchical: **country → city → theme park → ride**.
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Interactive world map](images/main.png) | ![Stats panel](images/stats.png) |
+| Visited countries highlighted, with city and theme-park markers and a top toolbar. | Stats panel with totals for countries, cities, theme parks and coasters. |
+| ![Theme park detail panel](images/theme_park.png) | ![Add a country form](images/new_country.png) |
+| Detail panel drilling into a park: photos, favourite coaster / flat ride, all rides. | Admin mode: add a country with a been-here / want-to-go status and optional year. |
+| ![Change password dialog](images/password_management.png) | |
+| Admin can change the login password from within the app. | |
+
 ## Structure
 
 This is an npm workspaces monorepo:
